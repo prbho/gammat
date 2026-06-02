@@ -9,6 +9,7 @@ import {
   Users,
   Target,
 } from "lucide-react";
+import Link from "next/link";
 import FadeUp from "./FadeUp";
 
 const events = [
@@ -19,6 +20,8 @@ const events = [
     desc: "Gain insights from industry experts, policymakers, and innovators shaping the future of aviation, maritime, logistics, and transport infrastructure across Africa.",
     accentColor: "#3db340",
     bgImage: "/conf.jpg",
+    href: "/sponsorship",
+    ctaText: "Become a Sponsor",
   },
   {
     icon: Building2,
@@ -27,6 +30,8 @@ const events = [
     desc: "Explore or showcase cutting-edge technologies, infrastructure solutions, and service providers driving the next generation of aviation, maritime, logistics, and transport systems across Africa.",
     accentColor: "#1a70c8",
     bgImage: "/events.jpg",
+    href: "/exhibition",
+    ctaText: "Secure Exhibition Space",
   },
   {
     icon: Handshake,
@@ -35,6 +40,8 @@ const events = [
     desc: "Connect with government leaders, executives, investors, and innovators to build partnerships and unlock transformative opportunities across Africa's transport ecosystem.",
     accentColor: "#f4a200",
     bgImage: "/networking.jpg",
+    href: "/register",
+    ctaText: "Register to Attend",
   },
 ];
 
@@ -46,78 +53,79 @@ export default function Events() {
         <div className="grid md:grid-cols-3 gap-5">
           {events.map((event, idx) => (
             <FadeUp key={event.title} delay={(idx + 1) as 1 | 2 | 3}>
-              <div
-                className="group relative rounded-xl overflow-hidden h-full transition-transform duration-300 hover:scale-[1.02]"
-                style={{
-                  backgroundImage: `url(${event.bgImage})`,
-                  backgroundSize: "cover",
-                  backgroundPosition: "center",
-                }}
-              >
-                {/* Dark overlay */}
-                <div className="absolute inset-0 bg-[#0d1a0f]/80" />
-
-                {/* Accent bottom border — uses each card's brand color */}
+              <Link href={event.href}>
                 <div
-                  className="absolute bottom-0 left-0 right-0 h-0.5"
-                  style={{ background: event.accentColor }}
-                />
+                  className="group relative rounded-xl overflow-hidden h-full transition-transform duration-300 hover:scale-[1.02] cursor-pointer"
+                  style={{
+                    backgroundImage: `url(${event.bgImage})`,
+                    backgroundSize: "cover",
+                    backgroundPosition: "center",
+                  }}
+                >
+                  {/* Dark overlay */}
+                  <div className="absolute inset-0 bg-[#0d1a0f]/80" />
 
-                {/* Content */}
-                <div className="relative p-7 h-full flex flex-col min-h-85">
-                  {/* Tag */}
-                  <span
-                    className="inline-flex items-center gap-2 text-[10px] font-bold tracking-[0.14em] uppercase mb-4"
-                    style={{ color: event.accentColor }}
-                  >
+                  {/* Accent bottom border — uses each card's brand color */}
+                  <div
+                    className="absolute bottom-0 left-0 right-0 h-0.5"
+                    style={{ background: event.accentColor }}
+                  />
+
+                  {/* Content */}
+                  <div className="relative p-7 h-full flex flex-col min-h-85">
+                    {/* Tag */}
                     <span
-                      className="w-1.5 h-1.5 rounded-full"
-                      style={{ background: event.accentColor }}
-                    />
-                    {event.tag}
-                  </span>
-
-                  {/* Icon + Title */}
-                  <div className="flex items-start gap-3 mb-4">
-                    <div
-                      className="w-9 h-9 rounded-md flex items-center justify-center shrink-0 mt-0.5"
-                      style={{
-                        background: `${event.accentColor}22`,
-                        border: `0.5px solid ${event.accentColor}55`,
-                      }}
+                      className="inline-flex items-center gap-2 text-[10px] font-bold tracking-[0.14em] uppercase mb-4"
+                      style={{ color: event.accentColor }}
                     >
-                      <event.icon
-                        className="w-4 h-4"
-                        style={{ color: event.accentColor }}
+                      <span
+                        className="w-1.5 h-1.5 rounded-full"
+                        style={{ background: event.accentColor }}
                       />
+                      {event.tag}
+                    </span>
+
+                    {/* Icon + Title */}
+                    <div className="flex items-start gap-3 mb-4">
+                      <div
+                        className="w-9 h-9 rounded-md flex items-center justify-center shrink-0 mt-0.5"
+                        style={{
+                          background: `${event.accentColor}22`,
+                          border: `0.5px solid ${event.accentColor}55`,
+                        }}
+                      >
+                        <event.icon
+                          className="w-4 h-4"
+                          style={{ color: event.accentColor }}
+                        />
+                      </div>
+                      <h3
+                        className="font-black text-white leading-none pt-1.5"
+                        style={{
+                          fontFamily: "'Bebas Neue', sans-serif",
+                          fontSize: "32px",
+                        }}
+                      >
+                        {event.title}
+                      </h3>
                     </div>
-                    <h3
-                      className="font-black text-white leading-none pt-1.5"
-                      style={{
-                        fontFamily: "'Bebas Neue', sans-serif",
-                        fontSize: "32px",
-                      }}
+
+                    {/* Description */}
+                    <p className="text-white/55 text-sm leading-relaxed grow">
+                      {event.desc}
+                    </p>
+
+                    {/* CTA */}
+                    <div
+                      className="inline-flex items-center gap-2 text-xs font-bold tracking-wider uppercase mt-6 transition-all duration-200 group/link"
+                      style={{ color: event.accentColor }}
                     >
-                      {event.title}
-                    </h3>
+                      {event.ctaText}
+                      <ArrowRight className="w-3.5 h-3.5 group-hover/link:translate-x-0.5 transition-transform" />
+                    </div>
                   </div>
-
-                  {/* Description */}
-                  <p className="text-white/55 text-sm leading-relaxed grow">
-                    {event.desc}
-                  </p>
-
-                  {/* CTA */}
-                  <a
-                    href="/register"
-                    className="inline-flex items-center gap-2 text-xs font-bold tracking-wider uppercase mt-6 transition-all duration-200 group/link"
-                    style={{ color: event.accentColor }}
-                  >
-                    Reserve Seat
-                    <ArrowRight className="w-3.5 h-3.5 group-hover/link:translate-x-0.5 transition-transform" />
-                  </a>
                 </div>
-              </div>
+              </Link>
             </FadeUp>
           ))}
         </div>

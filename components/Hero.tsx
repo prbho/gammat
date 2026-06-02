@@ -151,15 +151,15 @@ export default function Hero() {
               </Link>
 
               <Link
-                href="#sponsors"
-                className="inline-flex items-center gap-2 px-6 py-3 bg-transparent border border-white/20 rounded-md text-sm font-semibold text-white/75 transition-colors hover:border-white/40 hover:text-white"
+                href="/sponsorship"
+                className="inline-flex uppercase items-center gap-2 px-6 py-3 bg-transparent border border-white/20 rounded-md text-sm font-semibold text-white/75 transition-colors hover:border-white/40 hover:text-white"
               >
                 Become a Sponsor
               </Link>
 
               <Link
-                href="#"
-                className="inline-flex items-center gap-2 px-6 py-3 bg-transparent border border-white/20 rounded-md text-sm font-semibold text-white/75 transition-colors hover:border-white/40 hover:text-white"
+                href="https://res.cloudinary.com/daxebokgo/image/upload/fl_attachment/2026_GAMMAT_BROCHURE_pokl24"
+                className="inline-flex uppercase items-center gap-2 px-6 py-3 bg-transparent border border-white/20 rounded-md text-sm font-semibold text-white/75 transition-colors hover:border-white/40 hover:text-white"
               >
                 <Download className="w-4 h-4" />
                 Brochure

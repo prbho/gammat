@@ -14,6 +14,8 @@ import {
   Copy,
   Check,
   Send,
+  Building2,
+  DollarSign,
 } from "lucide-react";
 
 interface PaystackResponse {
@@ -56,6 +58,16 @@ declare global {
   }
 }
 
+interface BankAccount {
+  id: string;
+  bankName: string;
+  accountName: string;
+  accountNumber: string;
+  currency: string;
+  currencySymbol: string;
+  sortCode?: string;
+}
+
 const registrationPackages = [
   {
     id: "single",
@@ -94,13 +106,34 @@ const registrationPackages = [
   },
 ];
 
-const bankDetails = {
-  bankName: "First Bank of Nigeria",
-  accountName: "Aspire West Africa Ltd",
-  accountNumber: "2034567890",
-  sortCode: "011234567",
-  emailForReceipt: "finance@aspirewestafrica.com",
-};
+const bankAccounts: BankAccount[] = [
+  {
+    id: "ngn-zenith",
+    bankName: "Zenith Bank",
+    accountName: "Intra-Costal Communication Ltd",
+    accountNumber: "1311930150",
+    currency: "NGN",
+    currencySymbol: "₦",
+  },
+  {
+    id: "ngn-fidelity",
+    bankName: "Fidelity Bank",
+    accountName: "INTRA - COSTAL COMMUNICATIONS LTD",
+    accountNumber: "5080254915",
+    currency: "NGN",
+    currencySymbol: "₦",
+  },
+  {
+    id: "usd-fidelity",
+    bankName: "Fidelity Bank (USD)",
+    accountName: "Intra - Costal Communications Ltd",
+    accountNumber: "5240091000",
+    currency: "USD",
+    currencySymbol: "$",
+  },
+];
+
+const emailForReceipt = "finance@aspirewestafrica.com";
 
 export default function RegisterPage() {
   const [step, setStep] = useState<1 | 2 | 3>(1);
@@ -108,7 +141,10 @@ export default function RegisterPage() {
   const [paymentMethod, setPaymentMethod] = useState<
     "card" | "transfer" | null
   >(null);
-  const [copied, setCopied] = useState(false);
+  const [selectedBankAccount, setSelectedBankAccount] = useState<string>(
+    bankAccounts[0].id
+  );
+  const [copiedAccountId, setCopiedAccountId] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const scriptLoadedRef = useRef(false);
@@ -168,15 +204,20 @@ export default function RegisterPage() {
     setStep(3);
   };
 
-  const handleCopyAccountNumber = () => {
-    navigator.clipboard.writeText(bankDetails.accountNumber);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+  const handleCopyAccountNumber = (
+    accountNumber: string,
+    accountId: string
+  ) => {
+    navigator.clipboard.writeText(accountNumber);
+    setCopiedAccountId(accountId);
+    setTimeout(() => setCopiedAccountId(null), 2000);
   };
 
   const selectedPackageData = registrationPackages.find(
     (p) => p.id === selectedPackage
   );
+
+  const selectedBank = bankAccounts.find((b) => b.id === selectedBankAccount);
 
   const handleReset = () => {
     setSubmitted(false);
@@ -367,9 +408,7 @@ export default function RegisterPage() {
                 <p className="text-sm text-[#4a5a4a]">
                   Your registration will be confirmed once your payment is
                   verified. Please send your payment receipt to{" "}
-                  <strong className="text-[#1a2b1a]">
-                    {bankDetails.emailForReceipt}
-                  </strong>{" "}
+                  <strong className="text-[#1a2b1a]">{emailForReceipt}</strong>{" "}
                   for swift confirmation.
                 </p>
               </div>
@@ -705,69 +744,128 @@ export default function RegisterPage() {
                           onSubmit={handleTransferSubmit}
                           className="space-y-6"
                         >
-                          <div className="bg-[#eaf3de] rounded-lg p-6 space-y-4">
-                            <div className="text-center pb-4 border-b border-[#3B6D11]/20">
-                              <Landmark className="w-12 h-12 text-[#3B6D11] mx-auto mb-2" />
-                              <h3 className="font-bold text-[#1a2b1a] text-lg">
-                                Bank Transfer Details
-                              </h3>
-                            </div>
-                            <div className="space-y-3">
-                              <div className="flex justify-between items-center pb-2 border-b border-[#3B6D11]/10">
-                                <span className="text-sm text-[#4a5a4a]">
-                                  Bank:
-                                </span>
-                                <span className="text-sm font-semibold text-[#1a2b1a]">
-                                  {bankDetails.bankName}
-                                </span>
-                              </div>
-                              <div className="flex justify-between items-center pb-2 border-b border-[#3B6D11]/10">
-                                <span className="text-sm text-[#4a5a4a]">
-                                  Account Name:
-                                </span>
-                                <span className="text-sm font-semibold text-[#1a2b1a]">
-                                  {bankDetails.accountName}
-                                </span>
-                              </div>
-                              <div className="flex justify-between items-center pb-2 border-b border-[#3B6D11]/10">
-                                <span className="text-sm text-[#4a5a4a]">
-                                  Account Number:
-                                </span>
-                                <div className="flex items-center gap-2">
-                                  <span className="font-bold text-[#1a2b1a] font-mono text-lg">
-                                    {bankDetails.accountNumber}
-                                  </span>
-                                  <button
-                                    type="button"
-                                    onClick={handleCopyAccountNumber}
-                                    className="p-1 hover:bg-white rounded transition-colors"
-                                  >
-                                    {copied ? (
-                                      <Check className="w-4 h-4 text-[#3B6D11]" />
-                                    ) : (
-                                      <Copy className="w-4 h-4 text-[#4a5a4a]" />
-                                    )}
-                                  </button>
-                                </div>
-                              </div>
-                              <div className="flex justify-between items-center pb-2 border-b border-[#3B6D11]/10">
-                                <span className="text-sm text-[#4a5a4a]">
-                                  Sort Code:
-                                </span>
-                                <span className="text-sm font-semibold text-[#1a2b1a] font-mono">
-                                  {bankDetails.sortCode}
-                                </span>
-                              </div>
-                              <div className="flex justify-between items-center pt-2">
-                                <span className="text-sm text-[#4a5a4a]">
-                                  Amount to Pay:
-                                </span>
-                                <span className="text-xl font-bold text-[#3B6D11]">
-                                  {selectedPackageData?.priceFormatted}
-                                </span>
-                              </div>
+                          {/* Bank Account Selection */}
+                          <div>
+                            <label className="block text-sm font-semibold text-[#1a2b1a] mb-3">
+                              Select Account to Transfer To:
+                            </label>
+                            <div className="grid gap-3">
+                              {bankAccounts.map((account) => (
+                                <button
+                                  key={account.id}
+                                  type="button"
+                                  onClick={() =>
+                                    setSelectedBankAccount(account.id)
+                                  }
+                                  className={`flex items-center justify-between p-4 rounded-xl border transition-all duration-300 ${
+                                    selectedBankAccount === account.id
+                                      ? "border-[#3B6D11] bg-[#eaf3de] ring-1 ring-[#3B6D11]/20"
+                                      : "border-[#d4d8d0] bg-white hover:border-[#3B6D11]/50"
+                                  }`}
+                                >
+                                  <div className="flex items-center gap-3">
+                                    <div className="w-10 h-10 rounded-lg bg-[#eaf3de] flex items-center justify-center">
+                                      {account.currency === "USD" ? (
+                                        <DollarSign className="w-5 h-5 text-[#3B6D11]" />
+                                      ) : (
+                                        <Building2 className="w-5 h-5 text-[#3B6D11]" />
+                                      )}
+                                    </div>
+                                    <div className="text-left">
+                                      <p className="font-semibold text-[#1a2b1a]">
+                                        {account.bankName}
+                                      </p>
+                                      <p className="text-xs text-[#4a5a4a]">
+                                        {account.currency} Account
+                                      </p>
+                                    </div>
+                                  </div>
+                                  {selectedBankAccount === account.id && (
+                                    <CheckCircle className="w-5 h-5 text-[#3B6D11]" />
+                                  )}
+                                </button>
+                              ))}
                             </div>
                           </div>
+
+                          {/* Selected Bank Details */}
+                          {selectedBank && (
+                            <div className="bg-[#eaf3de] rounded-lg p-6 space-y-4">
+                              <div className="text-center pb-4 border-b border-[#3B6D11]/20">
+                                <Landmark className="w-12 h-12 text-[#3B6D11] mx-auto mb-2" />
+                                <h3 className="font-bold text-[#1a2b1a] text-lg">
+                                  Bank Transfer Details
+                                </h3>
+                                <p className="text-xs text-[#4a5a4a] mt-1">
+                                  {selectedBank.currency} Account
+                                </p>
+                              </div>
+                              <div className="space-y-3">
+                                <div className="flex justify-between items-center pb-2 border-b border-[#3B6D11]/10">
+                                  <span className="text-sm text-[#4a5a4a]">
+                                    Bank:
+                                  </span>
+                                  <span className="text-sm font-semibold text-[#1a2b1a]">
+                                    {selectedBank.bankName}
+                                  </span>
+                                </div>
+                                <div className="flex justify-between items-center pb-2 border-b border-[#3B6D11]/10">
+                                  <span className="text-sm text-[#4a5a4a]">
+                                    Account Name:
+                                  </span>
+                                  <span className="text-sm font-semibold text-[#1a2b1a] text-right">
+                                    {selectedBank.accountName}
+                                  </span>
+                                </div>
+                                <div className="flex justify-between items-center pb-2 border-b border-[#3B6D11]/10">
+                                  <span className="text-sm text-[#4a5a4a]">
+                                    Account Number:
+                                  </span>
+                                  <div className="flex items-center gap-2">
+                                    <span className="font-bold text-[#1a2b1a] font-mono text-lg">
+                                      {selectedBank.accountNumber}
+                                    </span>
+                                    <button
+                                      type="button"
+                                      onClick={() =>
+                                        handleCopyAccountNumber(
+                                          selectedBank.accountNumber,
+                                          selectedBank.id
+                                        )
+                                      }
+                                      className="p-1 hover:bg-white rounded transition-colors"
+                                    >
+                                      {copiedAccountId === selectedBank.id ? (
+                                        <Check className="w-4 h-4 text-[#3B6D11]" />
+                                      ) : (
+                                        <Copy className="w-4 h-4 text-[#4a5a4a]" />
+                                      )}
+                                    </button>
+                                  </div>
+                                </div>
+                                {selectedBank.sortCode && (
+                                  <div className="flex justify-between items-center pb-2 border-b border-[#3B6D11]/10">
+                                    <span className="text-sm text-[#4a5a4a]">
+                                      Sort Code:
+                                    </span>
+                                    <span className="text-sm font-semibold text-[#1a2b1a] font-mono">
+                                      {selectedBank.sortCode}
+                                    </span>
+                                  </div>
+                                )}
+                                <div className="flex justify-between items-center pt-2">
+                                  <span className="text-sm text-[#4a5a4a]">
+                                    Amount to Pay:
+                                  </span>
+                                  <span className="text-xl font-bold text-[#3B6D11]">
+                                    {selectedBank.currency === "USD"
+                                      ? selectedPackageData?.usdPrice
+                                      : selectedPackageData?.priceFormatted}
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+                          )}
 
                           <div className="bg-white border border-[#d4d8d0] rounded-lg p-4">
                             <p className="text-sm font-semibold text-[#1a2b1a] mb-2">
@@ -784,7 +882,7 @@ export default function RegisterPage() {
                               <li>
                                 After payment, send your payment receipt to:{" "}
                                 <strong className="text-[#3B6D11]">
-                                  {bankDetails.emailForReceipt}
+                                  {emailForReceipt}
                                 </strong>
                               </li>
                               <li>
