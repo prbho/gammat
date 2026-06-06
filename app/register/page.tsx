@@ -532,7 +532,7 @@ export default function RegisterPage() {
                         required
                         value={formData.fullName}
                         onChange={handleChange}
-                        className="w-full px-4 py-2 bg-white border border-[#d4d8d0] rounded-md text-[#1a2b1a] placeholder-[#4a5a4a]/50 focus:outline-none focus:border-[#3B6D11] text-sm"
+                        className="w-full px-4 py-2 bg-white border border-[#d4d8d0] rounded-md text-[#1a2b1a] placeholder-[#4a5a4a]/50 focus:outline-none focus:border-[#3B6D11] text-sm mt-3"
                         placeholder="John Doe"
                       />
                     </div>
@@ -546,7 +546,7 @@ export default function RegisterPage() {
                         required
                         value={formData.email}
                         onChange={handleChange}
-                        className="w-full px-4 py-2 bg-white border border-[#d4d8d0] rounded-md text-[#1a2b1a] placeholder-[#4a5a4a]/50 focus:outline-none focus:border-[#3B6D11] text-sm"
+                        className="w-full px-4 py-2 bg-white border border-[#d4d8d0] rounded-md text-[#1a2b1a] placeholder-[#4a5a4a]/50 focus:outline-none focus:border-[#3B6D11] text-sm mt-3"
                         placeholder="john@example.com"
                       />
                     </div>
@@ -560,7 +560,7 @@ export default function RegisterPage() {
                         required
                         value={formData.phone}
                         onChange={handleChange}
-                        className="w-full px-4 py-2 bg-white border border-[#d4d8d0] rounded-md text-[#1a2b1a] placeholder-[#4a5a4a]/50 focus:outline-none focus:border-[#3B6D11] text-sm"
+                        className="w-full px-4 py-2 bg-white border border-[#d4d8d0] rounded-md text-[#1a2b1a] placeholder-[#4a5a4a]/50 focus:outline-none focus:border-[#3B6D11] text-sm mt-3"
                         placeholder="+234 801 234 5678"
                       />
                     </div>
@@ -574,7 +574,7 @@ export default function RegisterPage() {
                         required
                         value={formData.organization}
                         onChange={handleChange}
-                        className="w-full px-4 py-2 bg-white border border-[#d4d8d0] rounded-md text-[#1a2b1a] placeholder-[#4a5a4a]/50 focus:outline-none focus:border-[#3B6D11] text-sm"
+                        className="w-full px-4 py-2 bg-white border border-[#d4d8d0] rounded-md text-[#1a2b1a] placeholder-[#4a5a4a]/50 focus:outline-none focus:border-[#3B6D11] text-sm mt-3"
                         placeholder="Company Name"
                       />
                     </div>
@@ -587,7 +587,7 @@ export default function RegisterPage() {
                         name="position"
                         value={formData.position}
                         onChange={handleChange}
-                        className="w-full px-4 py-2 bg-white border border-[#d4d8d0] rounded-md text-[#1a2b1a] placeholder-[#4a5a4a]/50 focus:outline-none focus:border-[#3B6D11] text-sm"
+                        className="w-full px-4 py-2 bg-white border border-[#d4d8d0] rounded-md text-[#1a2b1a] placeholder-[#4a5a4a]/50 focus:outline-none focus:border-[#3B6D11] text-sm mt-3"
                         placeholder="CEO, Director, etc."
                       />
                     </div>
@@ -623,7 +623,7 @@ export default function RegisterPage() {
                       value={formData.specialRequests}
                       onChange={handleChange}
                       rows={3}
-                      className="w-full px-4 py-2 bg-white border border-[#d4d8d0] rounded-md text-[#1a2b1a] placeholder-[#4a5a4a]/50 focus:outline-none focus:border-[#3B6D11] text-sm"
+                      className="w-full px-4 py-2 bg-white border border-[#d4d8d0] rounded-md text-[#1a2b1a] placeholder-[#4a5a4a]/50 focus:outline-none focus:border-[#3B6D11] text-sm mt-3"
                       placeholder="Any special requirements..."
                     />
                   </div>

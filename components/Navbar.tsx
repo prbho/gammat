@@ -13,6 +13,7 @@ const navLinks = [
   { href: "/exhibition", label: "Exhibition", isPage: true },
   { href: "/ecosystem", label: "Ecosystem", isPage: true },
   { href: "/sponsorship", label: "Sponsors", isPage: true },
+  { href: "/participation", label: "Participation", isPage: true },
   { href: "/dignitaries", label: "Dignitaries", isPage: false },
 ];
 

@@ -445,6 +445,264 @@ Submitted via GAMMAT 2026 Exhibition Page
         </div>
       </section>
 
+      {/* ── Exhibition Acceptance Form ── */}
+      <section className="px-6 mb-20">
+        <div className="max-w-5xl mx-auto">
+          <div className="bg-white border border-[#d4d8d0] rounded-3xl p-8 shadow-sm">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between mb-8">
+              <div>
+                <p className="text-[11px] font-bold tracking-[0.18em] uppercase text-[#3B6D11] mb-3">
+                  Exhibition Acceptance Form
+                </p>
+                <h2 className="text-3xl sm:text-4xl font-black text-[#1a2b1a]">
+                  Powering Africa&apos;s Connectivity through Exhibition
+                  Participation
+                </h2>
+              </div>
+              <p className="max-w-xl text-sm text-[#4a5a4a]">
+                Complete your company information, select your exhibition
+                package, and provide branding assets for the GAMMA TECH SUMMIT
+                2026 exhibition program.
+              </p>
+            </div>
+
+            <div className="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
+              <div className="space-y-6">
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <label className="block text-sm font-semibold text-[#1a2b1a]">
+                    Company Name*
+                    <input
+                      type="text"
+                      name="companyName"
+                      className="mt-2 block w-full rounded-2xl border border-[#d4d8d0] bg-[#fbfaf7] px-4 py-3 text-sm focus:border-[#3B6D11] focus:outline-none"
+                      placeholder="Company name"
+                      required
+                    />
+                  </label>
+                  <label className="block text-sm font-semibold text-[#1a2b1a]">
+                    Contact Person*
+                    <input
+                      type="text"
+                      name="contactPerson"
+                      className="mt-2 block w-full rounded-2xl border border-[#d4d8d0] bg-[#fbfaf7] px-4 py-3 text-sm focus:border-[#3B6D11] focus:outline-none"
+                      placeholder="Full name"
+                      required
+                    />
+                  </label>
+                </div>
+
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <label className="block text-sm font-semibold text-[#1a2b1a]">
+                    Email Address*
+                    <input
+                      type="email"
+                      name="email"
+                      className="mt-2 block w-full rounded-2xl border border-[#d4d8d0] bg-[#fbfaf7] px-4 py-3 text-sm focus:border-[#3B6D11] focus:outline-none"
+                      placeholder="info@company.com"
+                      required
+                    />
+                  </label>
+                  <label className="block text-sm font-semibold text-[#1a2b1a]">
+                    Phone Number*
+                    <input
+                      type="tel"
+                      name="phone"
+                      className="mt-2 block w-full rounded-2xl border border-[#d4d8d0] bg-[#fbfaf7] px-4 py-3 text-sm focus:border-[#3B6D11] focus:outline-none"
+                      placeholder="+234 801 234 5678"
+                      required
+                    />
+                  </label>
+                </div>
+
+                <label className="block text-sm font-semibold text-[#1a2b1a]">
+                  Company Address
+                  <input
+                    type="text"
+                    name="address"
+                    className="mt-2 block w-full rounded-2xl border border-[#d4d8d0] bg-[#fbfaf7] px-4 py-3 text-sm focus:border-[#3B6D11] focus:outline-none"
+                    placeholder="Address, city, state"
+                  />
+                </label>
+
+                <div className="rounded-3xl border border-[#d4d8d0] bg-[#f7f8f5] p-5">
+                  <p className="text-sm font-semibold text-[#1a2b1a] mb-3">
+                    Exhibition Package Selection
+                  </p>
+                  <div className="grid gap-3">
+                    {[
+                      {
+                        label: "Gold Exhibition Stand — 3m x 2m",
+                        price: "₦800,000",
+                      },
+                      {
+                        label: "Premium Exhibition Stand — 4m x 3m",
+                        price: "₦1,500,000",
+                      },
+                      {
+                        label: "Platinum Exhibition Stand — 6m x 3m",
+                        price: "₦2,500,000",
+                      },
+                      {
+                        label: "Diamond Exhibition Stand — 9m x 3m",
+                        price: "₦3,500,000",
+                      },
+                      {
+                        label: "Titanium Experience Stand — 12m x 6m",
+                        price: "₦5,000,000",
+                      },
+                    ].map((option) => (
+                      <label
+                        key={option.label}
+                        className="inline-flex w-full cursor-pointer items-center gap-3 rounded-2xl border border-[#d4d8d0] bg-white px-4 py-3 text-sm font-medium text-[#1a2b1a] hover:border-[#3B6D11]"
+                      >
+                        <input
+                          type="radio"
+                          name="package"
+                          value={option.label}
+                          className="h-4 w-4 text-[#3B6D11] border-[#d4d8d0] focus:ring-[#3B6D11]"
+                          required
+                        />
+                        <span>{option.label}</span>
+                        <span className="ml-auto text-sm font-bold text-[#3B6D11]">
+                          {option.price}
+                        </span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-6">
+                <div className="rounded-3xl border border-[#d4d8d0] bg-[#f7f8f5] p-6">
+                  <p className="text-sm font-semibold text-[#1a2b1a] mb-4">
+                    Exhibition Details
+                  </p>
+                  <label className="block text-sm font-semibold text-[#1a2b1a] mb-3">
+                    Stand Name / Theme
+                    <input
+                      type="text"
+                      name="standTheme"
+                      className="mt-2 block w-full rounded-2xl border border-[#d4d8d0] bg-white px-4 py-3 text-sm focus:border-[#3B6D11] focus:outline-none"
+                      placeholder="Innovation Hub"
+                    />
+                  </label>
+                  <label className="block text-sm font-semibold text-[#1a2b1a] mb-3">
+                    Number of Representatives
+                    <input
+                      type="number"
+                      name="representatives"
+                      min="1"
+                      className="mt-2 block w-full rounded-2xl border border-[#d4d8d0] bg-white px-4 py-3 text-sm focus:border-[#3B6D11] focus:outline-none"
+                      placeholder="3"
+                    />
+                  </label>
+                  <label className="block text-sm font-semibold text-[#1a2b1a]">
+                    Additional Requirements
+                    <textarea
+                      name="additionalRequirements"
+                      rows={4}
+                      className="mt-2 block w-full rounded-2xl border border-[#d4d8d0] bg-white px-4 py-3 text-sm focus:border-[#3B6D11] focus:outline-none"
+                      placeholder="Power supply, furniture, branding requests"
+                    />
+                  </label>
+                </div>
+
+                <div className="rounded-3xl border border-[#d4d8d0] bg-[#eef5ea] p-6">
+                  <p className="text-sm font-semibold text-[#1a2b1a] mb-4">
+                    Branding & Promotional Materials
+                  </p>
+                  <label className="block text-sm font-semibold text-[#1a2b1a] mb-3">
+                    Branding Assets Link
+                    <input
+                      type="url"
+                      name="brandingLink"
+                      className="mt-2 block w-full rounded-2xl border border-[#d4d8d0] bg-white px-4 py-3 text-sm focus:border-[#3B6D11] focus:outline-none"
+                      placeholder="https://"
+                    />
+                  </label>
+                  <label className="block text-sm font-semibold text-[#1a2b1a] mb-3">
+                    Promotional Requirements
+                    <textarea
+                      name="promoMaterials"
+                      rows={3}
+                      className="mt-2 block w-full rounded-2xl border border-[#d4d8d0] bg-white px-4 py-3 text-sm focus:border-[#3B6D11] focus:outline-none"
+                      placeholder="Banner placement, program ads, sampling"
+                    />
+                  </label>
+                </div>
+
+                <div className="rounded-3xl border border-[#d4d8d0] bg-white p-6">
+                  <p className="text-sm font-semibold text-[#1a2b1a] mb-4">
+                    Payment Information
+                  </p>
+                  <div className="space-y-3 text-sm text-[#4a5a4a]">
+                    <p>
+                      Secure payment can be made via bank transfer to our
+                      finance team.
+                    </p>
+                    <p className="font-semibold text-[#1a2b1a]">
+                      Bank: Zenith Bank
+                    </p>
+                    <p>Account Name: Intra-Costal Communication Ltd</p>
+                    <p>Account Number: 1311930150</p>
+                    <p>
+                      Send payment confirmation to{" "}
+                      <a
+                        href="mailto:finance@aspirewestafrica.com"
+                        className="text-[#3B6D11] underline"
+                      >
+                        finance@aspirewestafrica.com
+                      </a>
+                      .
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-8 border-t border-[#e3e6df] pt-8">
+              <div className="grid gap-4">
+                <label className="flex items-start gap-3 text-sm text-[#4a5a4a]">
+                  <input
+                    type="checkbox"
+                    className="mt-1 h-4 w-4 rounded border-[#d4d8d0] text-[#3B6D11] focus:ring-[#3B6D11]"
+                    required
+                  />
+                  I agree to the terms and conditions and confirm that the
+                  information provided is accurate.
+                </label>
+                <label className="flex items-start gap-3 text-sm text-[#4a5a4a]">
+                  <input
+                    type="checkbox"
+                    className="mt-1 h-4 w-4 rounded border-[#d4d8d0] text-[#3B6D11] focus:ring-[#3B6D11]"
+                    required
+                  />
+                  I authorize GAMMAT 2026 to contact me about exhibition
+                  logistics and payment details.
+                </label>
+              </div>
+              <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div className="text-sm text-[#4a5a4a]">
+                  Questions? Email{" "}
+                  <a
+                    href="mailto:exhibition@aspirewestafrica.com"
+                    className="text-[#3B6D11] underline"
+                  >
+                    exhibition@aspirewestafrica.com
+                  </a>
+                </div>
+                <button
+                  type="submit"
+                  className="inline-flex items-center justify-center rounded-full bg-[#3B6D11] px-6 py-3 text-sm font-bold uppercase tracking-[0.2em] text-white transition-colors hover:bg-[#2e5f1e]"
+                >
+                  Submit Inquiry
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* ── CTA Section ── */}
       <section className="px-6 pb-24">
         <div className="max-w-5xl mx-auto">

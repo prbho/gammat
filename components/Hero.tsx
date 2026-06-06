@@ -81,22 +81,22 @@ export default function Hero() {
       />
 
       {/* Main Content */}
-      <div className="relative z-20 max-w-7xl mx-auto min-h-screen flex flex-col justify-center px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_auto] gap-12 items-center w-full">
+      <div className="relative z-20 max-w-7xl mx-auto min-h-screen flex flex-col justify-center py-36 px-4 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_auto] gap-10 items-start w-full">
           {/* Left — primary content */}
-          <div>
+          <div className="text-center md:text-left max-w-xl mx-auto md:mx-0">
             {/* Title */}
             <div className="mb-4">
               <h1
                 className="font-black tracking-tight leading-none"
                 style={{ fontFamily: "'Bebas Neue', sans-serif" }}
               >
-                <span className="block text-[72px] sm:text-[88px] lg:text-[108px] text-white leading-none">
+                <span className="block text-4xl sm:text-5xl md:text-7xl lg:text-8xl xl:text-[108px] text-white leading-none">
                   GAMMAT
                 </span>
 
                 <span
-                  className="text-[68px] sm:text-[84px] lg:text-[100px] leading-none"
+                  className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl xl:text-[100px] leading-none"
                   style={{
                     background:
                       "linear-gradient(135deg, #e05c10 0%, #f4a200 30%, #3db340 60%, #1a70c8 100%)",
@@ -120,18 +120,25 @@ export default function Hero() {
             {/* Meta */}
             <div className="flex flex-col gap-3 mb-10">
               {[
-                { Icon: Calendar, label: "5 November 2026", sub: "One Day" },
+                {
+                  Icon: Calendar,
+                  label: "5 November 2026",
+                  sub: "Starting at 10:00 AM WAT",
+                },
                 {
                   Icon: MapPin,
                   label: "Oriental Hotel",
-                  sub: "Victoria Island, Lagos",
+                  sub: "Victoria Island, Lagos, Nigeria",
                 },
               ].map(({ Icon, label, sub }) => (
-                <div key={label} className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-md border border-white/10 bg-white/5 flex items-center justify-center shrink-0">
+                <div
+                  key={label}
+                  className="flex items-center gap-3 justify-center md:justify-start"
+                >
+                  <div className="hidden md:flex w-8 h-8 rounded-md border border-white/10 bg-white/5 items-center justify-center shrink-0">
                     <Icon className="w-4 h-4 text-green-400" />
                   </div>
-                  <span className="text-lg text-white/80">
+                  <span className="text-lg text-white/80 text-center md:text-left">
                     <span className="font-semibold text-white">{label}</span>
                     &nbsp;·&nbsp;{sub}
                   </span>
@@ -140,7 +147,7 @@ export default function Hero() {
             </div>
 
             {/* CTAs */}
-            <div className="flex flex-wrap gap-3">
+            <div className="flex flex-wrap gap-3 justify-center md:justify-start">
               <Link
                 href="/register"
                 className="group inline-flex items-center gap-2 px-6 py-3 bg-[#2d6e2e] border border-[#3d9e3e] rounded-md text-sm font-bold tracking-wider uppercase text-white transition-colors hover:bg-[#3a8a3b]"
@@ -170,7 +177,7 @@ export default function Hero() {
           {/* Right — stats */}
           <div
             ref={countersRef}
-            className="hidden lg:flex flex-col items-end gap-4"
+            className="hidden lg:flex flex-col items-end gap-4 mt-0 md:mt-20"
           >
             {[
               { target: 500, label: "Delegates" },
@@ -199,7 +206,7 @@ export default function Hero() {
                 High Impact
               </span>
               <span className="block text-[10px] font-semibold tracking-widest uppercase text-white/35 mt-0.5">
-                One Day Summit
+                Two Day Summit
               </span>
             </div>
           </div>
