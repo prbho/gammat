@@ -1,5 +1,6 @@
 "use client";
 
+import { FormEvent, useState } from "react";
 import {
   MapPin,
   Phone,
@@ -47,40 +48,39 @@ export default function GetInvolved() {
   return (
     <section id="get-involved" className="py-24 px-6 bg-[#0d1a0f]">
       <div className="max-w-5xl mx-auto">
-        {/* Section label */}
-        <FadeUp>
-          <div className="flex items-center gap-3 mb-5">
-            <span className="w-6 h-0.5 bg-[#3B6D11]" />
-            <span className="text-[11px] font-bold tracking-[0.14em] uppercase text-[#3B6D11]">
-              Contact Information
-            </span>
-          </div>
-          <h2
-            className="text-[56px] sm:text-[72px] leading-none font-black text-white mb-3"
-            style={{ fontFamily: "'Bebas Neue', sans-serif" }}
-          >
-            Get{" "}
-            <span
-              style={{
-                background:
-                  "linear-gradient(135deg, #e05c10 0%, #f4a200 30%, #3db340 60%, #1a70c8 100%)",
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-                backgroundClip: "text",
-              }}
-            >
-              Involved
-            </span>
-          </h2>
-          <p className="text-white/40 text-sm mb-14 max-w-md leading-relaxed">
-            Join Africa&apos;s premier transport leadership platform and be part
-            of the continent&apos;s transformation story.
-          </p>
-        </FadeUp>
-
         <div className="grid lg:grid-cols-2 gap-10">
           {/* Left — Contact info */}
           <div className="flex flex-col gap-6">
+            {/* Section label */}
+            <FadeUp>
+              <div className="flex items-center gap-3 mb-5">
+                <span className="w-6 h-0.5 bg-[#3B6D11]" />
+                <span className="text-[11px] font-bold tracking-[0.14em] uppercase text-[#3B6D11]">
+                  Contact Information
+                </span>
+              </div>
+              <h2
+                className="text-[56px] sm:text-[72px] leading-none font-black text-white mb-3"
+                style={{ fontFamily: "'Bebas Neue', sans-serif" }}
+              >
+                Get{" "}
+                <span
+                  style={{
+                    background:
+                      "linear-gradient(135deg, #e05c10 0%, #f4a200 30%, #3db340 60%, #1a70c8 100%)",
+                    WebkitBackgroundClip: "text",
+                    WebkitTextFillColor: "transparent",
+                    backgroundClip: "text",
+                  }}
+                >
+                  Involved
+                </span>
+              </h2>
+              <p className="text-white/40 text-sm mb-14 max-w-md leading-relaxed">
+                Join Africa&apos;s premier transport leadership platform and be
+                part of the continent&apos;s transformation story.
+              </p>
+            </FadeUp>
             <FadeUp delay={1}>
               {/* Org name */}
               <div className="flex items-center gap-3 mb-6">
@@ -158,48 +158,150 @@ export default function GetInvolved() {
               </div>
 
               <div className="border border-white/10 rounded-xl p-6 bg-white/3">
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-[11px] font-bold tracking-wider uppercase text-white/40 mb-1.5">
-                      Full Name
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="Your full name"
-                      className="w-full px-3.5 py-2.5 bg-white/5 border border-white/10 rounded-md text-white placeholder-white/25 text-sm focus:outline-none focus:border-[#3B6D11] focus:ring-1 focus:ring-[#3B6D11]/50 transition-colors"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-[11px] font-bold tracking-wider uppercase text-white/40 mb-1.5">
-                      Email Address
-                    </label>
-                    <input
-                      type="email"
-                      placeholder="your@email.com"
-                      className="w-full px-3.5 py-2.5 bg-white/5 border border-white/10 rounded-md text-white placeholder-white/25 text-sm focus:outline-none focus:border-[#3B6D11] focus:ring-1 focus:ring-[#3B6D11]/50 transition-colors"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-[11px] font-bold tracking-wider uppercase text-white/40 mb-1.5">
-                      Message
-                    </label>
-                    <textarea
-                      placeholder="Your message..."
-                      rows={4}
-                      className="w-full px-3.5 py-2.5 bg-white/5 border border-white/10 rounded-md text-white placeholder-white/25 text-sm focus:outline-none focus:border-[#3B6D11] focus:ring-1 focus:ring-[#3B6D11]/50 transition-colors resize-none"
-                    />
-                  </div>
-                  <button className="group w-full flex items-center justify-center gap-2 px-4 py-3 bg-[#2d6e2e] border border-[#3d9e3e] rounded-md text-sm font-bold tracking-wider uppercase text-white hover:bg-[#3a8a3b] transition-colors duration-200">
-                    <Send className="w-3.5 h-3.5" />
-                    Send Message
-                    <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
-                  </button>
-                </div>
+                <InquiryForm />
               </div>
             </div>
           </FadeUp>
         </div>
       </div>
     </section>
+  );
+}
+
+function InquiryForm() {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [company, setCompany] = useState("");
+  const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [status, setStatus] = useState<"idle" | "success" | "error">("idle");
+  const [feedback, setFeedback] = useState("");
+
+  const disabled = loading || !name.trim() || !email.trim() || !message.trim();
+
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (disabled) return;
+
+    setLoading(true);
+    setStatus("idle");
+    setFeedback("");
+
+    try {
+      const response = await fetch("/api/get-involved", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, phone, company, message }),
+      });
+      const result = await response.json();
+
+      if (!response.ok || !result.success) {
+        throw new Error(result.error || "Unable to send message.");
+      }
+
+      setStatus("success");
+      setFeedback(
+        "Your message was sent successfully. We will get back to you soon."
+      );
+      setName("");
+      setEmail("");
+      setPhone("");
+      setCompany("");
+      setMessage("");
+    } catch (error) {
+      console.error(error);
+      setStatus("error");
+      setFeedback(
+        "There was an issue sending your message. Please try again or contact us directly."
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <div>
+        <label className="block text-[11px] font-bold tracking-wider uppercase text-white/40 mb-1.5">
+          Full Name
+        </label>
+        <input
+          type="text"
+          value={name}
+          onChange={(event) => setName(event.target.value)}
+          placeholder="Your full name"
+          className="w-full px-3.5 py-2.5 bg-white/5 border border-white/10 rounded-md text-white placeholder-white/25 text-sm focus:outline-none focus:border-[#3B6D11] focus:ring-1 focus:ring-[#3B6D11]/50 transition-colors"
+        />
+      </div>
+      <div>
+        <label className="block text-[11px] font-bold tracking-wider uppercase text-white/40 mb-1.5">
+          Email Address
+        </label>
+        <input
+          type="email"
+          value={email}
+          onChange={(event) => setEmail(event.target.value)}
+          placeholder="your@email.com"
+          className="w-full px-3.5 py-2.5 bg-white/5 border border-white/10 rounded-md text-white placeholder-white/25 text-sm focus:outline-none focus:border-[#3B6D11] focus:ring-1 focus:ring-[#3B6D11]/50 transition-colors"
+        />
+      </div>
+      <div>
+        <label className="block text-[11px] font-bold tracking-wider uppercase text-white/40 mb-1.5">
+          Phone Number
+        </label>
+        <input
+          type="tel"
+          value={phone}
+          onChange={(event) => setPhone(event.target.value)}
+          placeholder="+234 800 000 0000"
+          className="w-full px-3.5 py-2.5 bg-white/5 border border-white/10 rounded-md text-white placeholder-white/25 text-sm focus:outline-none focus:border-[#3B6D11] focus:ring-1 focus:ring-[#3B6D11]/50 transition-colors"
+        />
+      </div>
+      <div>
+        <label className="block text-[11px] font-bold tracking-wider uppercase text-white/40 mb-1.5">
+          Company / Organisation
+        </label>
+        <input
+          type="text"
+          value={company}
+          onChange={(event) => setCompany(event.target.value)}
+          placeholder="Your organisation"
+          className="w-full px-3.5 py-2.5 bg-white/5 border border-white/10 rounded-md text-white placeholder-white/25 text-sm focus:outline-none focus:border-[#3B6D11] focus:ring-1 focus:ring-[#3B6D11]/50 transition-colors"
+        />
+      </div>
+      <div>
+        <label className="block text-[11px] font-bold tracking-wider uppercase text-white/40 mb-1.5">
+          Message
+        </label>
+        <textarea
+          value={message}
+          onChange={(event) => setMessage(event.target.value)}
+          placeholder="Your message..."
+          rows={4}
+          className="w-full px-3.5 py-2.5 bg-white/5 border border-white/10 rounded-md text-white placeholder-white/25 text-sm focus:outline-none focus:border-[#3B6D11] focus:ring-1 focus:ring-[#3B6D11]/50 transition-colors resize-none"
+        />
+      </div>
+      {feedback ? (
+        <div
+          className={`rounded-lg px-4 py-3 text-sm ${
+            status === "success"
+              ? "bg-[#eff9ef] text-[#194d26] border border-[#b7d1b2]"
+              : "bg-[#fff1f1] text-[#6f1d1d] border border-[#e4c5c5]"
+          }`}
+        >
+          {feedback}
+        </div>
+      ) : null}
+      <button
+        type="submit"
+        disabled={disabled}
+        className="group w-full flex items-center justify-center gap-2 px-4 py-3 bg-[#2d6e2e] border border-[#3d9e3e] rounded-md text-sm font-bold tracking-wider uppercase text-white hover:bg-[#3a8a3b] transition-colors duration-200 disabled:cursor-not-allowed disabled:opacity-50"
+      >
+        <Send className="w-3.5 h-3.5" />
+        {loading ? "Sending..." : "Send Message"}
+        <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+      </button>
+    </form>
   );
 }
