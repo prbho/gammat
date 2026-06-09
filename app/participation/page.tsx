@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Select } from "../../components/ui/Select";
 import { Mail, MapPin, Phone } from "lucide-react";
 import Link from "next/link";
 
@@ -285,12 +286,12 @@ function ParticipationStepper() {
 
               <label className="block text-sm font-semibold text-[#1a2b1a]">
                 Award Category*
-                <select
+                <Select
                   value={formData.awardCategory}
                   onChange={(event) =>
                     updateField("awardCategory", event.target.value)
                   }
-                  className="w-full px-4 py-2 bg-white border border-[#d4d8d0] rounded-md text-[#1a2b1a] focus:outline-none focus:border-[#3B6D11] text-sm mt-3"
+                  className="mt-3"
                 >
                   <option value="">Select category</option>
                   {awardCategories.map((category) => (
@@ -298,7 +299,7 @@ function ParticipationStepper() {
                       {category}
                     </option>
                   ))}
-                </select>
+                </Select>
               </label>
 
               <label className="block text-sm font-semibold text-[#1a2b1a]">

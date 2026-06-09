@@ -2,6 +2,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { Select } from "../../components/ui/Select";
 import {
   CheckCircle,
   ArrowRight,
@@ -133,7 +134,7 @@ const bankAccounts: BankAccount[] = [
   },
 ];
 
-const emailForReceipt = "finance@aspirewestafrica.com";
+const emailForReceipt = "events@aspirewestafrica.com";
 
 export default function RegisterPage() {
   const [step, setStep] = useState<1 | 2 | 3>(1);
@@ -235,6 +236,35 @@ export default function RegisterPage() {
     });
   };
 
+  const sendRegistrationInquiry = async () => {
+    const response = await fetch("/api/get-involved", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name: formData.fullName,
+        email: formData.email,
+        phone: formData.phone,
+        company: formData.organization,
+        packageName: selectedPackageData?.name,
+        inquiryType: "Registration",
+        message: `Registration details:\nPackage: ${
+          selectedPackageData?.name
+        }\nPrice: ${selectedPackageData?.priceFormatted}\nUSD Price: ${
+          selectedPackageData?.usdPrice
+        }\nPayment Method: ${paymentMethod ?? "Not selected"}\nDelegates: ${
+          formData.delegates || "N/A"
+        }\nPosition/Title: ${formData.position}\nSpecial Requests: ${
+          formData.specialRequests || "None"
+        }`,
+      }),
+    });
+
+    const result = await response.json();
+    if (!response.ok || !result.success) {
+      throw new Error(result.error || "Failed to send registration inquiry.");
+    }
+  };
+
   const handlePayWithPaystack = () => {
     if (!scriptLoadedRef.current || !window.PaystackPop) {
       console.error("Paystack script not loaded");
@@ -266,12 +296,16 @@ export default function RegisterPage() {
           },
         ],
       },
-      onSuccess: () => {
+      onSuccess: async () => {
         setIsSubmitting(true);
-        setTimeout(() => {
+        try {
+          await sendRegistrationInquiry();
+        } catch (error) {
+          console.error("Registration email send failed:", error);
+        } finally {
           setIsSubmitting(false);
           setSubmitted(true);
-        }, 1500);
+        }
       },
       onCancel: () => {
         console.log("Payment cancelled");
@@ -280,13 +314,21 @@ export default function RegisterPage() {
     handler.openIframe();
   };
 
-  const handleTransferSubmit = (e: React.FormEvent) => {
+  const handleTransferSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    setTimeout(() => {
-      setIsSubmitting(false);
+
+    try {
+      await sendRegistrationInquiry();
       setSubmitted(true);
-    }, 1500);
+    } catch (error) {
+      console.error("Error submitting registration transfer:", error);
+      alert(
+        "There was an error sending your registration details. Please try again."
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -596,12 +638,12 @@ export default function RegisterPage() {
                         <label className="block text-sm font-medium text-[#1a2b1a] mb-2">
                           Number of Delegates *
                         </label>
-                        <select
+                        <Select
                           name="delegates"
                           required
                           value={formData.delegates}
                           onChange={handleChange}
-                          className="w-full px-4 py-2 bg-white border border-[#d4d8d0] rounded-md text-[#1a2b1a] focus:outline-none focus:border-[#3B6D11] text-sm"
+                          className="mt-3"
                         >
                           <option value="">Select number of delegates</option>
                           {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((num) => (
@@ -609,7 +651,7 @@ export default function RegisterPage() {
                               {num} Delegate{num > 1 ? "s" : ""}
                             </option>
                           ))}
-                        </select>
+                        </Select>
                       </div>
                     )}
                   </div>

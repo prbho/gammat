@@ -6,10 +6,45 @@ import styles from "./Register.module.css";
 
 export default function Register() {
   const [submitted, setSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    setSubmitted(true);
+    setIsSubmitting(true);
+
+    const form = new FormData(e.currentTarget as HTMLFormElement);
+    const name = form.get("fullName")?.toString() ?? "";
+    const organization = form.get("organization")?.toString() ?? "";
+    const email = form.get("email")?.toString() ?? "";
+    const phone = form.get("phone")?.toString() ?? "";
+
+    try {
+      const response = await fetch("/api/get-involved", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name,
+          email,
+          phone,
+          company: organization,
+          inquiryType: "Registration Enquiry",
+          message: `Registration enquiry from website contact form.\nOrganization: ${organization}\nPhone: ${phone}`,
+        }),
+      });
+
+      const result = await response.json();
+      if (!response.ok || !result.success) {
+        throw new Error(result.error || "Unable to submit enquiry.");
+      }
+
+      setSubmitted(true);
+      setTimeout(() => setSubmitted(false), 5000);
+    } catch (error) {
+      console.error("Registration enquiry failed:", error);
+      alert("There was an error sending your enquiry. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -71,32 +106,59 @@ export default function Register() {
                   <span className={styles.successIcon}>✓</span>
                   <h3>Enquiry Received</h3>
                   <p>
-                    Thank you! A GAMMAT summit representative will respond within 24 hours.
+                    Thank you! A GAMMAT summit representative will respond
+                    within 24 hours.
                     <br />
-                    <a href="mailto:info@aspirewestafrica.com">info@aspirewestafrica.com</a>
+                    <a href="mailto:info@aspirewestafrica.com">
+                      info@aspirewestafrica.com
+                    </a>
                   </p>
                 </div>
               ) : (
                 <>
                   <h3 className={styles.formTitle}>Request Information</h3>
                   <p className={styles.formSub}>
-                    Our team will connect you with the right pass or sponsorship option.
+                    Our team will connect you with the right pass or sponsorship
+                    option.
                   </p>
                   <form onSubmit={handleSubmit} className={styles.form}>
                     <div className={styles.field}>
-                      <input type="text" placeholder="Full name" required />
+                      <input
+                        type="text"
+                        name="fullName"
+                        placeholder="Full name"
+                        required
+                      />
                     </div>
                     <div className={styles.field}>
-                      <input type="text" placeholder="Organisation / Company" required />
+                      <input
+                        type="text"
+                        name="organization"
+                        placeholder="Organisation / Company"
+                        required
+                      />
                     </div>
                     <div className={styles.field}>
-                      <input type="email" placeholder="Email address" required />
+                      <input
+                        type="email"
+                        name="email"
+                        placeholder="Email address"
+                        required
+                      />
                     </div>
                     <div className={styles.field}>
-                      <input type="tel" placeholder="Phone number" />
+                      <input
+                        type="tel"
+                        name="phone"
+                        placeholder="Phone number"
+                      />
                     </div>
-                    <button type="submit" className={styles.submit}>
-                      Submit Enquiry →
+                    <button
+                      type="submit"
+                      className={styles.submit}
+                      disabled={isSubmitting}
+                    >
+                      {isSubmitting ? "Sending..." : "Submit Enquiry →"}
                     </button>
                     <p className={styles.formNote}>
                       Response within 24 hours · info@aspirewestafrica.com

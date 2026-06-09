@@ -2,6 +2,7 @@
 "use client";
 
 import { useState } from "react";
+import { Select } from "../../components/ui/Select";
 import {
   MapPin,
   Phone,
@@ -127,12 +128,14 @@ export default function ContactPage() {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const handleChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
     >
   ) => {
+    setErrorMessage(null);
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
@@ -142,28 +145,27 @@ export default function ContactPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setErrorMessage(null);
 
-    const emailContent = `
-Contact Form Submission - GAMMAT 2026
+    try {
+      const response = await fetch("/api/get-involved", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: formData.fullName,
+          email: formData.email,
+          phone: formData.phone,
+          company: "Contact Page",
+          inquiryType: "Contact",
+          message: `Subject: ${formData.subject}\n\n${formData.message}`,
+        }),
+      });
 
-Name: ${formData.fullName}
-Email: ${formData.email}
-Phone: ${formData.phone}
-Subject: ${formData.subject}
+      const result = await response.json();
+      if (!response.ok || !result.success) {
+        throw new Error(result.error || "Unable to send contact message.");
+      }
 
-Message:
-${formData.message}
-
----
-Submitted via GAMMAT 2026 Contact Page
-    `;
-
-    const subject = encodeURIComponent(`Contact Form: ${formData.subject}`);
-    const body = encodeURIComponent(emailContent);
-    window.location.href = `mailto:info@aspirewestafrica.com?subject=${subject}&body=${body}`;
-
-    setTimeout(() => {
-      setIsSubmitting(false);
       setSubmitted(true);
       setFormData({
         fullName: "",
@@ -172,8 +174,16 @@ Submitted via GAMMAT 2026 Contact Page
         subject: "",
         message: "",
       });
-      setTimeout(() => setSubmitted(false), 5000);
-    }, 500);
+    } catch (error) {
+      console.error("Error sending contact message:", error);
+      setErrorMessage(
+        error instanceof Error
+          ? error.message
+          : "There was an error sending your message. Please try again or email us directly."
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -287,8 +297,21 @@ Submitted via GAMMAT 2026 Contact Page
                 24 hours.
               </p>
 
+              {errorMessage ? (
+                <div className="mb-4 rounded-lg border border-[#f7caca] bg-[#fff1f1] px-4 py-3 text-sm text-[#9f2a2a]">
+                  {errorMessage}
+                </div>
+              ) : null}
+
               {submitted ? (
-                <div className="bg-[#eaf3de] border border-[#3B6D11]/30 rounded-lg p-6 text-center">
+                <div className="bg-[#eaf3de] border border-[#3B6D11]/30 rounded-lg p-6 text-center relative">
+                  <button
+                    type="button"
+                    onClick={() => setSubmitted(false)}
+                    className="absolute top-4 right-4 text-[#3B6D11]/70 hover:text-[#3B6D11]"
+                  >
+                    Close
+                  </button>
                   <CheckCircle className="w-12 h-12 text-[#3B6D11] mx-auto mb-3" />
                   <h3 className="text-lg font-bold text-[#1a2b1a] mb-1">
                     Message Sent!
@@ -310,7 +333,7 @@ Submitted via GAMMAT 2026 Contact Page
                         required
                         value={formData.fullName}
                         onChange={handleChange}
-                        className="w-full px-3 py-2 border border-[#d4d8d0] rounded-md text-sm focus:outline-none focus:border-[#3B6D11]"
+                        className="w-full px-3 py-2 border border-[#d4d8d0] rounded-md text-sm focus:outline-none focus:border-[#3B6D11]  placeholder:text-stone-400 placeholder:text-stone-400"
                         placeholder="John Doe"
                       />
                     </div>
@@ -324,7 +347,7 @@ Submitted via GAMMAT 2026 Contact Page
                         required
                         value={formData.email}
                         onChange={handleChange}
-                        className="w-full px-3 py-2 border border-[#d4d8d0] rounded-md text-sm focus:outline-none focus:border-[#3B6D11]"
+                        className="w-full px-3 py-2 border border-[#d4d8d0] rounded-md text-sm focus:outline-none focus:border-[#3B6D11]  placeholder:text-stone-400 placeholder:text-stone-400"
                         placeholder="john@example.com"
                       />
                     </div>
@@ -339,7 +362,7 @@ Submitted via GAMMAT 2026 Contact Page
                         name="phone"
                         value={formData.phone}
                         onChange={handleChange}
-                        className="w-full px-3 py-2 border border-[#d4d8d0] rounded-md text-sm focus:outline-none focus:border-[#3B6D11]"
+                        className="w-full px-3 py-2 border border-[#d4d8d0] rounded-md text-sm focus:outline-none focus:border-[#3B6D11]  placeholder:text-stone-400 placeholder:text-stone-400"
                         placeholder="+234 801 234 5678"
                       />
                     </div>
@@ -347,12 +370,12 @@ Submitted via GAMMAT 2026 Contact Page
                       <label className="block text-xs font-semibold text-[#1a2b1a] mb-1">
                         Subject *
                       </label>
-                      <select
+                      <Select
                         name="subject"
                         required
                         value={formData.subject}
                         onChange={handleChange}
-                        className="w-full px-3 py-2 border border-[#d4d8d0] rounded-md text-sm focus:outline-none focus:border-[#3B6D11]"
+                        className="mt-3"
                       >
                         <option value="">Select a subject</option>
                         <option value="Registration Inquiry">
@@ -370,7 +393,7 @@ Submitted via GAMMAT 2026 Contact Page
                         <option value="General Question">
                           General Question
                         </option>
-                      </select>
+                      </Select>
                     </div>
                   </div>
                   <div>
@@ -383,7 +406,7 @@ Submitted via GAMMAT 2026 Contact Page
                       required
                       value={formData.message}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 border border-[#d4d8d0] rounded-md text-sm focus:outline-none focus:border-[#3B6D11]"
+                      className="w-full px-3 py-2 border border-[#d4d8d0] rounded-md text-sm focus:outline-none focus:border-[#3B6D11]  placeholder:text-stone-400 placeholder:text-stone-400"
                       placeholder="Tell us how we can help..."
                     />
                   </div>

@@ -91,12 +91,12 @@ export default function Hero() {
                 className="font-black tracking-tight leading-none"
                 style={{ fontFamily: "'Bebas Neue', sans-serif" }}
               >
-                <span className="block text-4xl sm:text-5xl md:text-7xl lg:text-8xl xl:text-[108px] text-white leading-none">
+                <span className="block text-7xl sm:text-7xl md:text-7xl lg:text-8xl xl:text-[108px] text-white leading-none">
                   GAMMAT
                 </span>
 
                 <span
-                  className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl xl:text-[100px] leading-none"
+                  className="text-7xl sm:text-7xl md:text-7xl lg:text-8xl xl:text-[100px] leading-none"
                   style={{
                     background:
                       "linear-gradient(135deg, #e05c10 0%, #f4a200 30%, #3db340 60%, #1a70c8 100%)",
@@ -180,7 +180,7 @@ export default function Hero() {
             className="hidden lg:flex flex-col items-end gap-4 mt-0 md:mt-20"
           >
             {[
-              { target: 500, label: "Delegates" },
+              { target: 200, label: "Delegates" },
               { target: 30, label: "Speakers" },
               { target: 12, label: "Countries" },
             ].map(({ target, label }, i) => (

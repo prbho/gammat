@@ -4,7 +4,7 @@ import nodemailer from "nodemailer";
 export const runtime = "nodejs";
 
 const ORGANISER_EMAIL =
-  process.env.ORGANISER_EMAIL || "info@aspirewestafrica.com";
+  process.env.ORGANISER_EMAIL || "events@aspirewestafrica.com";
 const FROM_EMAIL = process.env.FROM_EMAIL || ORGANISER_EMAIL;
 
 const transporter = nodemailer.createTransport({
@@ -133,18 +133,28 @@ export async function POST(request: Request) {
     const messageHtml = buildMessageHtml(data);
 
     await transporter.sendMail({
-      from: FROM_EMAIL,
+      from: `GAMMAT 2026 <${FROM_EMAIL}>`,
       to: ORGANISER_EMAIL,
+      replyTo: data.email || FROM_EMAIL,
       subject: `GAMMAT 2026 participation request: ${data.awardeeName}`,
       text: messageText,
       html: messageHtml,
+      headers: {
+        "X-Mailer": "Nodemailer",
+      },
     });
 
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("Participation email send failed:", error);
     return NextResponse.json(
-      { success: false, error: "Failed to send participation request." },
+      {
+        success: false,
+        error:
+          error instanceof Error
+            ? error.message
+            : "Failed to send participation request.",
+      },
       { status: 500 }
     );
   }

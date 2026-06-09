@@ -23,6 +23,7 @@ import {
   Send,
 } from "lucide-react";
 import { useState } from "react";
+import { Select } from "../../components/ui/Select";
 
 interface SponsorshipPackage {
   icon: LucideIcon;
@@ -149,9 +150,9 @@ const benefitsList = [
 ];
 
 const statsData = [
-  { icon: Users, label: "Expected Delegates", value: "2,000+" },
+  { icon: Users, label: "Expected Delegates", value: "200+" },
   { icon: Building, label: "Companies", value: "500+" },
-  { icon: Calendar, label: "Days", value: "1" },
+  { icon: Calendar, label: "Days", value: "2" },
   { icon: FileText, label: "Speaking Slots", value: "20+" },
 ];
 
@@ -222,63 +223,32 @@ export default function SponsorshipPage() {
     e.preventDefault();
     setIsSubmitting(true);
 
-    // Prepare email content
-    const emailContent = `
-Sponsorship Inquiry - ${selectedPackage?.name}
-
-Contact Information:
--------------------
-Full Name: ${formData.fullName}
-Email: ${formData.email}
-Phone: ${formData.phone}
-Organization: ${formData.organization}
-Position: ${formData.position}
-Country: ${formData.country}
-
-Sponsorship Details:
--------------------
-Package: ${selectedPackage?.name}
-Price: ${selectedPackage?.price}
-Budget Range: ${formData.budget}
-
-Additional Information:
--------------------
-How did you hear about us: ${formData.hearAbout}
-
-Message:
-${formData.message}
-
----
-Submitted via GAMMAT 2026 Sponsorship Page
-    `;
-
-    // Send email using mailto (fallback) or API endpoint
     try {
-      // Option 1: Use an API endpoint (recommended)
-      // const response = await fetch('/api/sponsorship-inquiry', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify({
-      //     ...formData,
-      //     package: selectedPackage?.name,
-      //     price: selectedPackage?.price,
-      //   }),
-      // });
+      const response = await fetch("/api/get-involved", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: formData.fullName,
+          email: formData.email,
+          phone: formData.phone,
+          company: formData.organization,
+          message: `Package: ${selectedPackage?.name}\nPrice: ${selectedPackage?.price}\nBudget Range: ${formData.budget}\nHow did you hear about us: ${formData.hearAbout}\n\n${formData.message}`,
+          packageName: selectedPackage?.name,
+          budget: formData.budget,
+          inquiryType: "Sponsorship",
+        }),
+      });
 
-      // Option 2: Use mailto as fallback
-      const subject = encodeURIComponent(
-        `Sponsorship Inquiry: ${selectedPackage?.name} - ${formData.organization}`
-      );
-      const body = encodeURIComponent(emailContent);
-      window.location.href = `mailto:sponsors@aspirewestafrica.com?subject=${subject}&body=${body}`;
+      const result = await response.json();
 
-      setTimeout(() => {
-        setIsSubmitting(false);
-        setSubmitted(true);
-        setTimeout(() => {
-          closeModal();
-        }, 2000);
-      }, 500);
+      if (!response.ok || !result.success) {
+        throw new Error(
+          result.error || "Unable to submit sponsorship inquiry."
+        );
+      }
+
+      setSubmitted(true);
+      setIsSubmitting(false);
     } catch (error) {
       console.error("Error submitting form:", error);
       setIsSubmitting(false);
@@ -572,7 +542,7 @@ Submitted via GAMMAT 2026 Sponsorship Page
                         required
                         value={formData.fullName}
                         onChange={handleChange}
-                        className="w-full px-3 py-2 border border-[#d4d8d0] rounded-md text-sm focus:outline-none focus:border-[#3B6D11]"
+                        className="w-full px-3 py-2 border border-[#d4d8d0] rounded-md text-sm focus:outline-none focus:border-[#3B6D11]  placeholder:text-stone-400 placeholder:text-stone-400"
                         placeholder="John Doe"
                       />
                     </div>
@@ -586,7 +556,7 @@ Submitted via GAMMAT 2026 Sponsorship Page
                         required
                         value={formData.email}
                         onChange={handleChange}
-                        className="w-full px-3 py-2 border border-[#d4d8d0] rounded-md text-sm focus:outline-none focus:border-[#3B6D11]"
+                        className="w-full px-3 py-2 border border-[#d4d8d0] rounded-md text-sm focus:outline-none focus:border-[#3B6D11]  placeholder:text-stone-400 placeholder:text-stone-400"
                         placeholder="john@company.com"
                       />
                     </div>
@@ -600,7 +570,7 @@ Submitted via GAMMAT 2026 Sponsorship Page
                         required
                         value={formData.phone}
                         onChange={handleChange}
-                        className="w-full px-3 py-2 border border-[#d4d8d0] rounded-md text-sm focus:outline-none focus:border-[#3B6D11]"
+                        className="w-full px-3 py-2 border border-[#d4d8d0] rounded-md text-sm focus:outline-none focus:border-[#3B6D11]  placeholder:text-stone-400 placeholder:text-stone-400"
                         placeholder="+234 801 234 5678"
                       />
                     </div>
@@ -614,7 +584,7 @@ Submitted via GAMMAT 2026 Sponsorship Page
                         required
                         value={formData.organization}
                         onChange={handleChange}
-                        className="w-full px-3 py-2 border border-[#d4d8d0] rounded-md text-sm focus:outline-none focus:border-[#3B6D11]"
+                        className="w-full px-3 py-2 border border-[#d4d8d0] rounded-md text-sm focus:outline-none focus:border-[#3B6D11]  placeholder:text-stone-400 placeholder:text-stone-400"
                         placeholder="Company Name"
                       />
                     </div>
@@ -628,7 +598,7 @@ Submitted via GAMMAT 2026 Sponsorship Page
                         required
                         value={formData.position}
                         onChange={handleChange}
-                        className="w-full px-3 py-2 border border-[#d4d8d0] rounded-md text-sm focus:outline-none focus:border-[#3B6D11]"
+                        className="w-full px-3 py-2 border border-[#d4d8d0] rounded-md text-sm focus:outline-none focus:border-[#3B6D11]  placeholder:text-stone-400 placeholder:text-stone-400"
                         placeholder="CEO, Director, etc."
                       />
                     </div>
@@ -636,12 +606,12 @@ Submitted via GAMMAT 2026 Sponsorship Page
                       <label className="block text-xs font-semibold text-[#1a2b1a] mb-1">
                         Country *
                       </label>
-                      <select
+                      <Select
                         name="country"
                         required
                         value={formData.country}
                         onChange={handleChange}
-                        className="w-full px-3 py-2 border border-[#d4d8d0] rounded-md text-sm focus:outline-none focus:border-[#3B6D11]"
+                        className="mt-3"
                       >
                         <option value="">Select Country</option>
                         <option value="Nigeria">Nigeria</option>
@@ -651,7 +621,7 @@ Submitted via GAMMAT 2026 Sponsorship Page
                         <option value="Rwanda">Rwanda</option>
                         <option value="Egypt">Egypt</option>
                         <option value="Other">Other</option>
-                      </select>
+                      </Select>
                     </div>
                   </div>
 
@@ -660,11 +630,11 @@ Submitted via GAMMAT 2026 Sponsorship Page
                       <label className="block text-xs font-semibold text-[#1a2b1a] mb-1">
                         Budget Range
                       </label>
-                      <select
+                      <Select
                         name="budget"
                         value={formData.budget}
                         onChange={handleChange}
-                        className="w-full px-3 py-2 border border-[#d4d8d0] rounded-md text-sm focus:outline-none focus:border-[#3B6D11]"
+                        className="mt-3"
                       >
                         <option value="">Select budget range</option>
                         <option value="$5,000 - $10,000">
@@ -680,17 +650,17 @@ Submitted via GAMMAT 2026 Sponsorship Page
                           $50,000 - $100,000
                         </option>
                         <option value="$100,000+">$100,000+</option>
-                      </select>
+                      </Select>
                     </div>
                     <div>
                       <label className="block text-xs font-semibold text-[#1a2b1a] mb-1">
                         How did you hear about us?
                       </label>
-                      <select
+                      <Select
                         name="hearAbout"
                         value={formData.hearAbout}
                         onChange={handleChange}
-                        className="w-full px-3 py-2 border border-[#d4d8d0] rounded-md text-sm focus:outline-none focus:border-[#3B6D11]"
+                        className="mt-3"
                       >
                         <option value="">Select an option</option>
                         <option value="LinkedIn">LinkedIn</option>
@@ -699,7 +669,7 @@ Submitted via GAMMAT 2026 Sponsorship Page
                         <option value="Colleague">Colleague</option>
                         <option value="Website">Website</option>
                         <option value="Other">Other</option>
-                      </select>
+                      </Select>
                     </div>
                   </div>
 
@@ -712,7 +682,7 @@ Submitted via GAMMAT 2026 Sponsorship Page
                       rows={3}
                       value={formData.message}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 border border-[#d4d8d0] rounded-md text-sm focus:outline-none focus:border-[#3B6D11]"
+                      className="w-full px-3 py-2 border border-[#d4d8d0] rounded-md text-sm focus:outline-none focus:border-[#3B6D11]  placeholder:text-stone-400 placeholder:text-stone-400"
                       placeholder="Tell us about your sponsorship goals, specific requirements, or questions..."
                     />
                   </div>

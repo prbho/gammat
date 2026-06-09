@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
+import { Select } from "../../components/ui/Select";
 
 interface ExhibitionPackage {
   icon: LucideIcon;
@@ -103,7 +104,7 @@ const benefitsList = [
 const statsData = [
   { icon: Users, label: "Expected Attendees", value: "2,000+" },
   { icon: Building2, label: "Exhibitors", value: "50+" },
-  { icon: Calendar, label: "Summit Days", value: "1" },
+  { icon: Calendar, label: "Summit Days", value: "2" },
   { icon: Eye, label: "Brand Exposure", value: "10,000+" },
 ];
 
@@ -172,43 +173,35 @@ export default function ExhibitionPage() {
     e.preventDefault();
     setIsSubmitting(true);
 
-    const emailContent = `
-Exhibition Inquiry - ${selectedPackage?.name}
+    try {
+      const response = await fetch("/api/get-involved", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: formData.fullName,
+          email: formData.email,
+          phone: formData.phone,
+          company: formData.organization,
+          packageName: selectedPackage?.name,
+          inquiryType: "Exhibition",
+          message: `Package: ${selectedPackage?.name}\nPrice: ${selectedPackage?.price} (${selectedPackage?.usdPrice})\nCountry: ${formData.country}\nPosition: ${formData.position}\n\n${formData.message}`,
+        }),
+      });
 
-Contact Information:
--------------------
-Full Name: ${formData.fullName}
-Email: ${formData.email}
-Phone: ${formData.phone}
-Organization: ${formData.organization}
-Position: ${formData.position}
-Country: ${formData.country}
+      const result = await response.json();
+      if (!response.ok || !result.success) {
+        throw new Error(result.error || "Unable to submit exhibition inquiry.");
+      }
 
-Exhibition Details:
--------------------
-Package: ${selectedPackage?.name}
-Price: ${selectedPackage?.price} (${selectedPackage?.usdPrice})
-
-Message:
-${formData.message}
-
----
-Submitted via GAMMAT 2026 Exhibition Page
-    `;
-
-    const subject = encodeURIComponent(
-      `Exhibition Inquiry: ${selectedPackage?.name} - ${formData.organization}`
-    );
-    const body = encodeURIComponent(emailContent);
-    window.location.href = `mailto:exhibition@aspirewestafrica.com?subject=${subject}&body=${body}`;
-
-    setTimeout(() => {
-      setIsSubmitting(false);
       setSubmitted(true);
-      setTimeout(() => {
-        closeModal();
-      }, 2000);
-    }, 500);
+    } catch (error) {
+      console.error("Error submitting exhibition inquiry:", error);
+      alert(
+        "There was an error submitting your exhibition inquiry. Please try again or contact us directly."
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -648,10 +641,10 @@ Submitted via GAMMAT 2026 Exhibition Page
                     <p>
                       Send payment confirmation to{" "}
                       <a
-                        href="mailto:finance@aspirewestafrica.com"
+                        href="mailto:events@aspirewestafrica.com"
                         className="text-[#3B6D11] underline"
                       >
-                        finance@aspirewestafrica.com
+                        events@aspirewestafrica.com
                       </a>
                       .
                     </p>
@@ -819,7 +812,7 @@ Submitted via GAMMAT 2026 Exhibition Page
                         required
                         value={formData.fullName}
                         onChange={handleChange}
-                        className="w-full px-3 py-2 border border-[#d4d8d0] rounded-md text-sm focus:outline-none focus:border-[#3B6D11]"
+                        className="w-full px-3 py-2 border border-[#d4d8d0] rounded-md text-sm focus:outline-none focus:border-[#3B6D11]  placeholder:text-stone-400 placeholder:text-stone-400"
                         placeholder="John Doe"
                       />
                     </div>
@@ -833,7 +826,7 @@ Submitted via GAMMAT 2026 Exhibition Page
                         required
                         value={formData.email}
                         onChange={handleChange}
-                        className="w-full px-3 py-2 border border-[#d4d8d0] rounded-md text-sm focus:outline-none focus:border-[#3B6D11]"
+                        className="w-full px-3 py-2 border border-[#d4d8d0] rounded-md text-sm focus:outline-none focus:border-[#3B6D11]  placeholder:text-stone-400 placeholder:text-stone-400"
                         placeholder="john@company.com"
                       />
                     </div>
@@ -847,7 +840,7 @@ Submitted via GAMMAT 2026 Exhibition Page
                         required
                         value={formData.phone}
                         onChange={handleChange}
-                        className="w-full px-3 py-2 border border-[#d4d8d0] rounded-md text-sm focus:outline-none focus:border-[#3B6D11]"
+                        className="w-full px-3 py-2 border border-[#d4d8d0] rounded-md text-sm focus:outline-none focus:border-[#3B6D11]  placeholder:text-stone-400 placeholder:text-stone-400"
                         placeholder="+234 801 234 5678"
                       />
                     </div>
@@ -861,7 +854,7 @@ Submitted via GAMMAT 2026 Exhibition Page
                         required
                         value={formData.organization}
                         onChange={handleChange}
-                        className="w-full px-3 py-2 border border-[#d4d8d0] rounded-md text-sm focus:outline-none focus:border-[#3B6D11]"
+                        className="w-full px-3 py-2 border border-[#d4d8d0] rounded-md text-sm focus:outline-none focus:border-[#3B6D11]  placeholder:text-stone-400 placeholder:text-stone-400"
                         placeholder="Company Name"
                       />
                     </div>
@@ -874,7 +867,7 @@ Submitted via GAMMAT 2026 Exhibition Page
                         name="position"
                         value={formData.position}
                         onChange={handleChange}
-                        className="w-full px-3 py-2 border border-[#d4d8d0] rounded-md text-sm focus:outline-none focus:border-[#3B6D11]"
+                        className="w-full px-3 py-2 border border-[#d4d8d0] rounded-md text-sm focus:outline-none focus:border-[#3B6D11]  placeholder:text-stone-400 placeholder:text-stone-400"
                         placeholder="CEO, Director, etc."
                       />
                     </div>
@@ -882,12 +875,12 @@ Submitted via GAMMAT 2026 Exhibition Page
                       <label className="block text-xs font-semibold text-[#1a2b1a] mb-1">
                         Country *
                       </label>
-                      <select
+                      <Select
                         name="country"
                         required
                         value={formData.country}
                         onChange={handleChange}
-                        className="w-full px-3 py-2 border border-[#d4d8d0] rounded-md text-sm focus:outline-none focus:border-[#3B6D11]"
+                        className="mt-3"
                       >
                         <option value="">Select Country</option>
                         <option value="Nigeria">Nigeria</option>
@@ -897,7 +890,7 @@ Submitted via GAMMAT 2026 Exhibition Page
                         <option value="Rwanda">Rwanda</option>
                         <option value="Egypt">Egypt</option>
                         <option value="Other">Other</option>
-                      </select>
+                      </Select>
                     </div>
                   </div>
 
@@ -910,7 +903,7 @@ Submitted via GAMMAT 2026 Exhibition Page
                       rows={3}
                       value={formData.message}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 border border-[#d4d8d0] rounded-md text-sm focus:outline-none focus:border-[#3B6D11]"
+                      className="w-full px-3 py-2 border border-[#d4d8d0] rounded-md text-sm focus:outline-none focus:border-[#3B6D11]  placeholder:text-stone-400 placeholder:text-stone-400"
                       placeholder="Tell us about your exhibition goals, specific requirements, or questions..."
                     />
                   </div>
