@@ -11,7 +11,7 @@ const ContentSecurityPolicy = [
   "base-uri 'self'",
   "frame-src 'none' https://www.googletagmanager.com",
   "frame-ancestors 'none'",
-  "img-src 'self' data:",
+  "img-src 'self' data: https://www.googletagmanager.com https://www.google-analytics.com",
   "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
   "font-src 'self' data: https://fonts.gstatic.com",
   "connect-src 'self' https://www.googletagmanager.com https://www.google-analytics.com",
