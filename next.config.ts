@@ -4,15 +4,17 @@ const isDevelopment = process.env.NODE_ENV !== "production";
 
 const ContentSecurityPolicy = [
   "default-src 'self'",
-  `script-src 'self' 'unsafe-inline'${isDevelopment ? " 'unsafe-eval'" : ""}`,
+  `script-src 'self' 'unsafe-inline' https://www.googletagmanager.com${
+    isDevelopment ? " 'unsafe-eval'" : ""
+  }`,
   "object-src 'none'",
   "base-uri 'self'",
-  "frame-src 'none'",
+  "frame-src 'none' https://www.googletagmanager.com",
   "frame-ancestors 'none'",
   "img-src 'self' data:",
   "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
   "font-src 'self' data: https://fonts.gstatic.com",
-  "connect-src 'self'",
+  "connect-src 'self' https://www.googletagmanager.com https://www.google-analytics.com",
 ].join("; ");
 
 const nextConfig: NextConfig = {
