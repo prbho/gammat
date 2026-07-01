@@ -206,7 +206,7 @@ export default function Hero() {
                 High Impact
               </span>
               <span className="block text-[10px] font-semibold tracking-widest uppercase text-white/35 mt-0.5">
-                Two Day Summit
+                Three Day Summit
               </span>
             </div>
           </div>
