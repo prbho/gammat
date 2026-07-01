@@ -122,7 +122,7 @@ export default function Hero() {
               {[
                 {
                   Icon: Calendar,
-                  label: "5 November 2026",
+                  label: "5th - 7th November 2026",
                   sub: "Starting at 10:00 AM WAT",
                 },
                 {
