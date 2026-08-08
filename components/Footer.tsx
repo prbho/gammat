@@ -50,7 +50,7 @@ export default function Footer() {
     <footer className="bg-[#080f08] border-t border-white/8">
       {/* Newsletter strip */}
       <div className="border-b border-white/8">
-        <div className="max-w-5xl mx-auto px-6 py-10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex flex-col md:flex-row justify-between items-center gap-6">
             <div>
               <div className="flex items-center gap-3 mb-1.5">
@@ -65,7 +65,7 @@ export default function Footer() {
               </p>
             </div>
             <div className="flex flex-col md:flex-row items-center gap-3">
-              <div className="relative w-32 aspect-4/3 rounded-xl overflow-hidden flex items-center justify-center mb-4 border border-white/10 group-hover:border-green-500/30 transition-colors bg-blue-950">
+              <div className="relative w-32 aspect-4/3 rounded-xl overflow-hidden flex items-center justify-center border border-white/10 group-hover:border-green-500/30 transition-colors bg-blue-950">
                 <Image
                   src={"/partners/aspire-west-africa.png"}
                   alt="Aspire West Africa logo"
@@ -76,7 +76,7 @@ export default function Footer() {
                   priority={false}
                 />
               </div>
-              <div className="relative w-32 aspect-4/3 rounded-xl overflow-hidden flex items-center justify-center mb-4 border border-white/10 group-hover:border-green-500/30 transition-colors bg-white">
+              <div className="relative w-32 aspect-4/3 rounded-xl overflow-hidden flex items-center justify-center border border-white/10 group-hover:border-green-500/30 transition-colors bg-white">
                 <Image
                   src={"/partners/nimasa-logo.jpg"}
                   alt="NIMASA logo"
@@ -93,7 +93,7 @@ export default function Footer() {
       </div>
 
       {/* Main footer grid */}
-      <div className="max-w-5xl mx-auto px-6 py-14">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
           {/* Brand column */}
           <div className="space-y-5">
@@ -253,7 +253,7 @@ export default function Footer() {
       />
 
       {/* Bottom bar */}
-      <div className="max-w-5xl mx-auto px-6 py-5">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5">
         <div className="flex flex-col md:flex-row justify-between items-center gap-3">
           <p className="text-[11px] text-white/20">
             © 2026 GAMMAT Summit. All rights reserved.

@@ -16,7 +16,7 @@ const sectors = [
   {
     icon: Plane,
     tag: "Aviation",
-    title: "Aviation",
+    title: "Aviation & Aerospace",
     desc: "Air connectivity, fleet expansion, airport infrastructure, and aviation technology shaping the future of African skies.",
     accentColor: "#e05c10",
     bgImage: "/aviation.png",
@@ -24,7 +24,7 @@ const sectors = [
   {
     icon: Ship,
     tag: "Maritime",
-    title: "Maritime",
+    title: "Maritime & Blue Economy",
     desc: "Port modernization, shipping corridors, blue economy, and maritime safety driving Africa's coastal trade.",
     accentColor: "#1a70c8",
     bgImage: "/maritime.png",
@@ -40,7 +40,7 @@ const sectors = [
   {
     icon: Building2,
     tag: "Infrastructure",
-    title: "Infrastructure",
+    title: "Infrastructure & Development",
     desc: "Roads, railways, bridges, transport hubs, and special economic zones enabling continental integration.",
     accentColor: "#f4a200",
     bgImage: "/infrastructure.png",
@@ -56,7 +56,7 @@ const sectors = [
   {
     icon: Microchip,
     tag: "Technology",
-    title: "Technology",
+    title: "Technology & Digital Innovation",
     desc: "Smart mobility, digital logistics, AI optimization, and transport tech innovations transforming the industry.",
     accentColor: "#c4267a",
     bgImage: "/technology.png",
@@ -129,7 +129,11 @@ export default function Ecosystem() {
                   {/* Tag */}
                   <span
                     className="inline-flex items-center gap-2 text-[10px] font-bold tracking-[0.14em] uppercase mb-4"
-                    style={{ color: sector.accentColor }}
+                    style={{
+                      color: sector.accentColor,
+                      fontFamily: "'Bebas Neue', sans-serif",
+                      fontSize: "16px",
+                    }}
                   >
                     <span
                       className="w-1.5 h-1.5 rounded-full"
@@ -139,7 +143,7 @@ export default function Ecosystem() {
                   </span>
 
                   {/* Icon + Title */}
-                  <div className="flex items-start gap-3 mb-4">
+                  <div className="flex gap-3 mb-4 items-center">
                     <div
                       className="w-9 h-9 rounded-md flex items-center justify-center shrink-0 mt-0.5"
                       style={{
@@ -153,11 +157,11 @@ export default function Ecosystem() {
                       />
                     </div>
                     <h3
-                      className="font-black text-white leading-none pt-1.5"
-                      style={{
-                        fontFamily: "'Bebas Neue', sans-serif",
-                        fontSize: "28px",
-                      }}
+                      className="font-black text-lg text-white leading-6 pt-1.5"
+                      // style={{
+                      //   fontFamily: "'Bebas Neue', sans-serif",
+                      //   fontSize: "28px",
+                      // }}
                     >
                       {sector.title}
                     </h3>

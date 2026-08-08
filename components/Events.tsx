@@ -76,11 +76,17 @@ export default function Events() {
                     {/* Tag */}
                     <span
                       className="inline-flex items-center gap-2 text-[10px] font-bold tracking-[0.14em] uppercase mb-4"
-                      style={{ color: event.accentColor }}
+                      style={{
+                        color: event.accentColor,
+                        fontFamily: "'Bebas Neue', sans-serif",
+                        fontSize: "16px",
+                      }}
                     >
                       <span
                         className="w-1.5 h-1.5 rounded-full"
-                        style={{ background: event.accentColor }}
+                        style={{
+                          background: event.accentColor, // fontFamily: "'Bebas Neue', sans-serif",
+                        }}
                       />
                       {event.tag}
                     </span>
@@ -102,8 +108,8 @@ export default function Events() {
                       <h3
                         className="font-black text-white leading-none pt-1.5"
                         style={{
-                          fontFamily: "'Bebas Neue', sans-serif",
-                          fontSize: "32px",
+                          // fontFamily: "'Bebas Neue', sans-serif",
+                          fontSize: "24px",
                         }}
                       >
                         {event.title}
@@ -111,7 +117,7 @@ export default function Events() {
                     </div>
 
                     {/* Description */}
-                    <p className="text-white/55 text-sm leading-relaxed grow">
+                    <p className="text-white/55 text-sm leading-7 grow">
                       {event.desc}
                     </p>
 
@@ -132,9 +138,9 @@ export default function Events() {
 
         {/* Info bar */}
         <FadeUp delay={4}>
-          <div className="mt-10 flex flex-wrap items-center justify-center gap-6 border border-[#d4d8d0] bg-white rounded-lg px-6 py-4">
+          <div className="mt-10 flex flex-wrap items-center justify-center gap-6  bg-white rounded-lg px-6 py-4">
             {[
-              { Icon: Calendar, text: "5th November 2026" },
+              { Icon: Calendar, text: "5th - 7th November 2026" },
               { Icon: Users, text: "Limited Seats Available" },
               { Icon: Target, text: "High-Impact Sessions" },
             ].map(({ Icon, text }, i) => (

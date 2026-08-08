@@ -70,7 +70,7 @@ const reasons = [
 export default function WhyAttend() {
   return (
     <section id="why" className="py-24 px-6 bg-[#0d1a0f]">
-      <div className="max-w-6xl mx-auto">
+      <div className="max-w-5xl mx-auto">
         {/* Header */}
         <FadeUp>
           <div className="text-center mb-16">
@@ -152,8 +152,8 @@ export default function WhyAttend() {
 
                   {/* Title */}
                   <h3
-                    className="text-2xl md:text-3xl font-black text-white mb-3"
-                    style={{ fontFamily: "'Bebas Neue', sans-serif" }}
+                    className="text-lg md:text-xl font-black text-white mb-3"
+                    // style={{ fontFamily: "'Bebas Neue', sans-serif" }}
                   >
                     {reason.title}
                   </h3>
