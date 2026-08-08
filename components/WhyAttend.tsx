@@ -74,12 +74,10 @@ export default function WhyAttend() {
         {/* Header */}
         <FadeUp>
           <div className="text-center mb-16">
-            <div className="flex items-center justify-center gap-3 mb-6">
-              <span className="w-6 h-0.5 bg-[#3B6D11]" />
-              <span className="text-[11px] font-bold tracking-[0.14em] uppercase text-[#3B6D11]">
+            <div className="flex items-center justify-center gap-3 mb-2">
+              <span className="text-xs sm:text-sm font-semibold tracking-[0.12em] uppercase text-white/45 mb-3">
                 Why Attend
               </span>
-              <span className="w-6 h-0.5 bg-[#3B6D11]" />
             </div>
             <h2
               className="text-5xl sm:text-6xl lg:text-7xl leading-none font-black text-white mb-6"

@@ -1,8 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight, Mail, Phone, MapPin, Send } from "lucide-react";
+import { ArrowRight, Mail, Phone, MapPin } from "lucide-react";
 import { SocialIcon } from "react-social-icons";
+import Image from "next/image";
 
 const footerLinks = {
   quick: [
@@ -54,24 +55,38 @@ export default function Footer() {
             <div>
               <div className="flex items-center gap-3 mb-1.5">
                 <span className="w-5 h-0.5 bg-[#3B6D11]" />
-                <span className="text-[10px] font-bold tracking-[0.14em] uppercase text-[#3B6D11]">
-                  Stay Updated
+                <span className="text-xs sm:text-sm font-semibold tracking-[0.12em] uppercase text-white/45">
+                  GAMMA & TECH SUMMIT 2026
                 </span>
               </div>
-              <p className="text-white/40 text-sm">
-                Get the latest news and announcements about GAMMAT 2026.
+              <p className="text-[#3B6D11] text-sm">
+                ... powered by <span className="font-bold">NIMASA</span> &
+                <span className="font-bold ml-1">Aspire West Africa</span>.
               </p>
             </div>
-            <div className="flex flex-col sm:flex-row gap-2.5 w-full md:w-auto">
-              <input
-                type="email"
-                placeholder="Your email address"
-                className="px-4 py-2.5 bg-white/5 border border-white/10 rounded-md text-white text-sm placeholder-white/25 focus:outline-none focus:border-[#3B6D11] focus:ring-1 focus:ring-[#3B6D11]/50 transition-colors min-w-55"
-              />
-              <button className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-[#2d6e2e] border border-[#3d9e3e] rounded-md text-sm font-bold tracking-wider uppercase text-white hover:bg-[#3a8a3b] transition-colors group">
-                Subscribe
-                <Send className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
-              </button>
+            <div className="flex flex-col md:flex-row items-center gap-3">
+              <div className="relative w-32 aspect-4/3 rounded-xl overflow-hidden flex items-center justify-center mb-4 border border-white/10 group-hover:border-green-500/30 transition-colors bg-blue-950">
+                <Image
+                  src={"/partners/aspire-west-africa.png"}
+                  alt="Aspire West Africa logo"
+                  fill
+                  className="object-contain p-3"
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
+                  quality={100}
+                  priority={false}
+                />
+              </div>
+              <div className="relative w-32 aspect-4/3 rounded-xl overflow-hidden flex items-center justify-center mb-4 border border-white/10 group-hover:border-green-500/30 transition-colors bg-white">
+                <Image
+                  src={"/partners/nimasa-logo.jpg"}
+                  alt="NIMASA logo"
+                  fill
+                  className="object-contain p-3"
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
+                  quality={100}
+                  priority={false}
+                />
+              </div>
             </div>
           </div>
         </div>

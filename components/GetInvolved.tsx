@@ -54,8 +54,7 @@ export default function GetInvolved() {
             {/* Section label */}
             <FadeUp>
               <div className="flex items-center gap-3 mb-5">
-                <span className="w-6 h-0.5 bg-[#3B6D11]" />
-                <span className="text-[11px] font-bold tracking-[0.14em] uppercase text-[#3B6D11]">
+                <span className="text-xs sm:text-sm font-semibold tracking-[0.12em] uppercase text-white/45">
                   Contact Information
                 </span>
               </div>

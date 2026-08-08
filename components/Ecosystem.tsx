@@ -116,7 +116,7 @@ export default function Ecosystem() {
                 }}
               >
                 {/* Dark overlay */}
-                <div className="absolute inset-0 bg-[#0d1a0f]/80" />
+                <div className="absolute inset-0 bg-[#0d1a0f]/90" />
 
                 {/* Accent bottom border — uses each card's brand color */}
                 <div
