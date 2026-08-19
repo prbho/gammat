@@ -3,39 +3,53 @@ import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 
-// Partner data — add optional `logoBg` for custom background per logo
+// Partner data — now includes optional `website` for external links
 const partnersData = [
   {
     id: 1,
-    name: "LAGRIDE",
-    category: "Lagos City Cab & Ride-Hailing",
-    imageSrc: "/partners/lagride-logo.png",
-    imageAlt: "LagRide logo",
-    logoBg: "bg-white/10",
+    name: "NIMASA",
+    category: "Maritime Authority",
+    imageSrc: "/partners/nimasa-logo.png",
+    imageAlt: "NIMASA logo",
+    logoBg: "bg-sky-900/50",
+    website: "https://www.nimasa.gov.ng",
   },
   {
     id: 2,
+    name: "LAGRIDE",
+    category: "Lagos City Ride-Hailing",
+    imageSrc: "/partners/lagride-logo.png",
+    imageAlt: "LagRide logo",
+    logoBg: "bg-white/10",
+    website: "https://www.lagride.ng/",
+  },
+  {
+    id: 3,
     name: "Federal Ministry of Aviation",
     category: "Aviation Authority",
     imageSrc: "/partners/federal_ministry-of-aviation.png",
     imageAlt: "Federal Ministry of Aviation logo",
     logoBg: "bg-blue-900/30",
+    website: "https://aviation.gov.ng",
   },
   {
-    id: 3,
+    id: 4,
     name: "Ministry of Defence",
     category: "Defense Authority",
     imageSrc: "/partners/ministry-of-defence.png",
     imageAlt: "Ministry of Defence logo",
     logoBg: "bg-green-900/30",
+    website: "https://defence.gov.ng",
   },
   {
-    id: 4,
-    name: "Entrepreneurs for African Development",
-    // category: "Entrepreneurship & Development",
+    id: 5,
+    name: "ELIAD",
+    category: "Entrepreneurship",
     imageSrc: "/partners/Entrepreneurs-for-African-Development-logo.png",
     imageAlt: "Entrepreneurs for African Development logo",
     logoBg: "bg-amber-900",
+    website:
+      "https://www.linkedin.com/in/enterprise-leadership-initiative-for-africa-development-eliad-3b997140a/",
   },
 ];
 
@@ -87,7 +101,7 @@ export default function Partners() {
           </div>
 
           {/* Partners Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 md:gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-5 md:gap-6">
             {partnersData.map((partner) => (
               <PartnerCard
                 key={partner.id}
@@ -96,6 +110,7 @@ export default function Partners() {
                 imageSrc={partner.imageSrc}
                 imageAlt={partner.imageAlt}
                 logoBg={partner.logoBg}
+                website={partner.website}
               />
             ))}
           </div>
@@ -131,13 +146,14 @@ export default function Partners() {
   );
 }
 
-// ----- Partner Card Component with custom background & high-quality image -----
+// ----- Partner Card Component with hover overlay -----
 interface PartnerCardProps {
   name: string;
   category?: string;
   imageSrc: string;
   imageAlt: string;
   logoBg?: string;
+  website?: string;
 }
 
 function PartnerCard({
@@ -146,32 +162,63 @@ function PartnerCard({
   imageSrc,
   imageAlt,
   logoBg = "bg-white/5",
+  website,
 }: PartnerCardProps) {
-  return (
-    <div className="group relative">
-      <div className="flex flex-col items-center text-center">
-        {/* Logo container — rectangular with rounded corners, custom background */}
-        <div
-          className={`relative w-full aspect-4/3 rounded-xl overflow-hidden flex items-center justify-center mb-4 border border-white/10 group-hover:border-green-500/30 transition-colors ${logoBg}`}
-        >
-          <Image
-            src={imageSrc}
-            alt={imageAlt}
-            fill
-            className="object-contain p-3"
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
-            quality={100} // High quality
-            priority={false} // Set to true for above-the-fold images
-          />
-        </div>
+  // Card content shared between linked and non-linked versions
+  const cardContent = (
+    <div className="flex flex-col items-center text-center">
+      {/* Logo container — with hover overlay */}
+      <div
+        className={`relative w-full aspect-4/3 rounded-xl overflow-hidden flex items-center justify-center mb-4 border border-white/10 group-hover:border-green-500/30 transition-colors ${logoBg}`}
+      >
+        {/* Partner Logo */}
+        <Image
+          src={imageSrc}
+          alt={imageAlt}
+          fill
+          className="object-contain p-3"
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
+          quality={100}
+          priority={false}
+        />
 
-        <h3 className="text-sm font-semibold text-white/80 group-hover:text-white transition-colors">
-          {name}
-        </h3>
+        {/* HOVER OVERLAY — appears on group hover */}
+        <div className="absolute inset-0 bg-black/60 backdrop-blur-[2px] flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+          <div className="text-white text-xs sm:text-sm text-center px-3">
+            <span className="block">Learn more about</span>{" "}
+            <span className="font-semibold text-sm sm:text-lg md:text-xl tracking-wide">
+              {name}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <h3 className="text-sm font-semibold text-white/80 group-hover:text-white transition-colors">
+        {name}
+      </h3>
+      {category && (
         <p className="text-[11px] font-semibold tracking-[0.08em] uppercase text-white/30 mt-1">
           {category}
         </p>
-      </div>
+      )}
     </div>
   );
+
+  // If a website is provided, wrap the card in a clickable anchor
+  if (website) {
+    return (
+      <Link
+        href={website}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="group block transition-opacity hover:opacity-80 focus:outline-none focus:ring-2 focus:ring-green-500/50 rounded-xl"
+        aria-label={`Visit ${name} website`}
+      >
+        {cardContent}
+      </Link>
+    );
+  }
+
+  // Otherwise render as a static card (no link)
+  return <div className="group">{cardContent}</div>;
 }
