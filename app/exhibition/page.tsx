@@ -137,11 +137,18 @@ export default function ExhibitionPage() {
   });
 
   const trackGoogleAdsConversion = () => {
-    if (typeof window !== "undefined") {
-      (window as any).gtag?.("event", "conversion", {
-        send_to: "AW-18453740960/XRANCNGI8_0cEKD7tt9E",
-      });
-    }
+    if (typeof window === "undefined") return;
+
+    const gtag = (
+      window as Window &
+        typeof globalThis & {
+          gtag?: (...args: unknown[]) => void;
+        }
+    ).gtag;
+
+    gtag?.("event", "conversion", {
+      send_to: "AW-18453740960/XRANCNGI8_0cEKD7tt9E",
+    });
   };
 
   const openModal = (pkg: ExhibitionPackage) => {
