@@ -69,6 +69,7 @@ export const metadata: Metadata = {
 
 const gtmId = process.env.NEXT_PUBLIC_GTM_ID;
 const gaId = process.env.NEXT_PUBLIC_GA_ID;
+const adsId = "AW-18453740960";
 
 export default function RootLayout({
   children,
@@ -104,6 +105,17 @@ export default function RootLayout({
             </Script>
           </>
         ) : null}
+
+        <Script
+          src={`https://www.googletagmanager.com/gtag/js?id=${adsId}`}
+          strategy="afterInteractive"
+        />
+        <Script id="google-ads-init" strategy="afterInteractive">
+          {`window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', '${adsId}');`}
+        </Script>
       </head>
       <body className="min-h-full flex flex-col">
         {gtmId ? (
