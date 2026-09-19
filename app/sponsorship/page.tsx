@@ -186,6 +186,14 @@ export default function SponsorshipPage() {
     hearAbout: "",
   });
 
+  const trackGoogleAdsConversion = () => {
+    if (typeof window !== "undefined") {
+      (window as any).gtag?.("event", "conversion", {
+        send_to: "AW-18453740960/XRANCNGI8_0cEKD7tt9E",
+      });
+    }
+  };
+
   const openModal = (pkg: SponsorshipPackage) => {
     setSelectedPackage(pkg);
     setIsModalOpen(true);
@@ -248,6 +256,7 @@ export default function SponsorshipPage() {
       }
 
       setSubmitted(true);
+      trackGoogleAdsConversion();
       setIsSubmitting(false);
     } catch (error) {
       console.error("Error submitting form:", error);

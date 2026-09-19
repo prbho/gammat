@@ -136,6 +136,14 @@ export default function ExhibitionPage() {
     message: "",
   });
 
+  const trackGoogleAdsConversion = () => {
+    if (typeof window !== "undefined") {
+      (window as any).gtag?.("event", "conversion", {
+        send_to: "AW-18453740960/XRANCNGI8_0cEKD7tt9E",
+      });
+    }
+  };
+
   const openModal = (pkg: ExhibitionPackage) => {
     setSelectedPackage(pkg);
     setFormData((prev) => ({ ...prev, packageName: pkg.name }));
@@ -194,6 +202,7 @@ export default function ExhibitionPage() {
       }
 
       setSubmitted(true);
+      trackGoogleAdsConversion();
     } catch (error) {
       console.error("Error submitting exhibition inquiry:", error);
       alert(

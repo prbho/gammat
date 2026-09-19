@@ -130,6 +130,14 @@ export default function ContactPage() {
   const [submitted, setSubmitted] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
+  const trackGoogleAdsConversion = () => {
+    if (typeof window !== "undefined") {
+      (window as any).gtag?.("event", "conversion", {
+        send_to: "AW-18453740960/XRANCNGI8_0cEKD7tt9E",
+      });
+    }
+  };
+
   const handleChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
@@ -167,6 +175,7 @@ export default function ContactPage() {
       }
 
       setSubmitted(true);
+      trackGoogleAdsConversion();
       setFormData({
         fullName: "",
         email: "",

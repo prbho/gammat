@@ -180,6 +180,14 @@ function ParticipationStepper() {
   const [submissionMessage, setSubmissionMessage] = useState("");
   const [submitted, setSubmitted] = useState(false);
 
+  const trackGoogleAdsConversion = () => {
+    if (typeof window !== "undefined") {
+      (window as any).gtag?.("event", "conversion", {
+        send_to: "AW-18453740960/XRANCNGI8_0cEKD7tt9E",
+      });
+    }
+  };
+
   const selectedPackage = tablePackages.find(
     (pkg) => pkg.label === formData.packageChoice
   );
@@ -237,6 +245,7 @@ function ParticipationStepper() {
       }
 
       setSubmitted(true);
+      trackGoogleAdsConversion();
       setSubmissionMessage(
         "Thank you! Your participation request has been sent to the organiser email. The GAMMAT team will follow up shortly."
       );

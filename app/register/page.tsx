@@ -149,6 +149,15 @@ export default function RegisterPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const scriptLoadedRef = useRef(false);
+
+  const trackGoogleAdsConversion = () => {
+    if (typeof window !== "undefined") {
+      (window as any).gtag?.("event", "conversion", {
+        send_to: "AW-18453740960/XRANCNGI8_0cEKD7tt9E",
+      });
+    }
+  };
+
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
@@ -305,6 +314,7 @@ export default function RegisterPage() {
         } finally {
           setIsSubmitting(false);
           setSubmitted(true);
+          trackGoogleAdsConversion();
         }
       },
       onCancel: () => {
@@ -321,6 +331,7 @@ export default function RegisterPage() {
     try {
       await sendRegistrationInquiry();
       setSubmitted(true);
+      trackGoogleAdsConversion();
     } catch (error) {
       console.error("Error submitting registration transfer:", error);
       alert(
