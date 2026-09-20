@@ -161,7 +161,7 @@ export default function RegisterPage() {
     ).gtag;
 
     gtag?.("event", "conversion", {
-      send_to: "AW-18453740960/XRANCNGI8_0cEKD7tt9E",
+      send_to: ["AW-18453740960/MxeiCI-Lx_4cEKD7tt9E"],
     });
   };
 
