@@ -4,17 +4,18 @@ const isDevelopment = process.env.NODE_ENV !== "production";
 
 const ContentSecurityPolicy = [
   "default-src 'self'",
-  `script-src 'self' 'unsafe-inline' https://www.googletagmanager.com${
+  `script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://googleads.g.doubleclick.net${
     isDevelopment ? " 'unsafe-eval'" : ""
   }`,
+  "script-src-elem 'self' 'unsafe-inline' https://www.googletagmanager.com https://googleads.g.doubleclick.net",
   "object-src 'none'",
   "base-uri 'self'",
   "frame-src 'none' https://www.googletagmanager.com",
   "frame-ancestors 'none'",
-  "img-src 'self' data: https://www.googletagmanager.com https://www.google-analytics.com",
+  "img-src 'self' data: https://www.googletagmanager.com https://www.google-analytics.com https://googleads.g.doubleclick.net https://www.google.com https://ad.doubleclick.net",
   "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
   "font-src 'self' data: https://fonts.gstatic.com",
-  "connect-src 'self' https://www.googletagmanager.com https://www.google-analytics.com",
+  "connect-src 'self' https://www.googletagmanager.com https://www.google-analytics.com https://googleads.g.doubleclick.net https://www.google.com https://ad.doubleclick.net https://www.googleadservices.com",
 ].join("; ");
 
 const nextConfig: NextConfig = {
