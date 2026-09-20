@@ -10,7 +10,7 @@ const ContentSecurityPolicy = [
   "script-src-elem 'self' 'unsafe-inline' https://www.googletagmanager.com https://googleads.g.doubleclick.net https://static.cloudflareinsights.com",
   "object-src 'none'",
   "base-uri 'self'",
-  "frame-src 'none' https://www.googletagmanager.com",
+  "frame-src 'none'",
   "frame-ancestors 'none'",
   "img-src 'self' data: https://www.googletagmanager.com https://www.google-analytics.com https://googleads.g.doubleclick.net https://www.google.com https://www.google.com.ng https://ad.doubleclick.net https://static.cloudflareinsights.com",
   "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
