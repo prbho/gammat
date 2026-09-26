@@ -134,7 +134,7 @@ const bankAccounts: BankAccount[] = [
   },
 ];
 
-const emailForReceipt = "events@aspirewestafrica.com";
+const emailForReceipt = "info@aspirewestafrica.com";
 
 export default function RegisterPage() {
   const [step, setStep] = useState<1 | 2 | 3>(1);

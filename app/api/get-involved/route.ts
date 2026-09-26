@@ -4,7 +4,7 @@ import nodemailer from "nodemailer";
 export const runtime = "nodejs";
 
 const ORGANISER_EMAIL =
-  process.env.ORGANISER_EMAIL || "events@aspirewestafrica.com";
+  process.env.ORGANISER_EMAIL || "info@aspirewestafrica.com";
 const FROM_EMAIL = process.env.FROM_EMAIL || ORGANISER_EMAIL;
 
 const transporter = nodemailer.createTransport({

@@ -38,7 +38,7 @@ const contactInfo = [
   {
     icon: Mail,
     title: "Email Us",
-    details: ["info@aspirewestafrica.com", "sponsors@aspirewestafrica.com"],
+    details: ["info@aspirewestafrica.com", "info@aspirewestafrica.com"],
     color: "#3db340",
     action: "mailto:info@aspirewestafrica.com",
   },
@@ -65,21 +65,21 @@ const teamContacts = [
   {
     name: "Sponsorship Team",
     role: "Sponsorship & Exhibition Opportunities",
-    email: "sponsors@aspirewestafrica.com",
+    email: "info@aspirewestafrica.com",
     phone: "+234 802 345 6789",
     icon: Award,
   },
   {
     name: "Speakers Bureau",
     role: "Speaker Nominations & Panel Proposals",
-    email: "speakers@aspirewestafrica.com",
+    email: "info@aspirewestafrica.com",
     phone: "+234 803 456 7890",
     icon: Users,
   },
   {
     name: "Media & PR",
     role: "Media Accreditation & Press Inquiries",
-    email: "media@aspirewestafrica.com",
+    email: "info@aspirewestafrica.com",
     phone: "+234 804 567 8901",
     icon: Globe,
   },

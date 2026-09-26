@@ -493,7 +493,7 @@ export default function SponsorshipPage() {
                   Call Us
                 </a>
                 <a
-                  href="mailto:sponsors@aspirewestafrica.com"
+                  href="mailto:info@aspirewestafrica.com"
                   className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 border border-white/20 rounded-md text-sm text-white/70 hover:text-white transition-colors"
                 >
                   <Mail className="w-3.5 h-3.5" />

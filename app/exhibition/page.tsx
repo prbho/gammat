@@ -657,10 +657,10 @@ export default function ExhibitionPage() {
                     <p>
                       Send payment confirmation to{" "}
                       <a
-                        href="mailto:events@aspirewestafrica.com"
+                        href="mailto:info@aspirewestafrica.com"
                         className="text-[#3B6D11] underline"
                       >
-                        events@aspirewestafrica.com
+                        info@aspirewestafrica.com
                       </a>
                       .
                     </p>
