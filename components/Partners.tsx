@@ -178,7 +178,7 @@ function PartnerCard({
           fill
           className="object-contain p-3"
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
-          quality={100}
+          quality={75}
           priority={false}
         />
 

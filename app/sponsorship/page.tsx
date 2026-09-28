@@ -1,6 +1,13 @@
 // app/sponsorship/page.tsx
 "use client";
 
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/Select";
 import type { LucideIcon } from "lucide-react";
 import {
   CheckCircle,
@@ -23,7 +30,6 @@ import {
   Send,
 } from "lucide-react";
 import { useState } from "react";
-import { Select } from "../../components/ui/Select";
 
 interface SponsorshipPackage {
   icon: LucideIcon;
@@ -221,6 +227,11 @@ export default function SponsorshipPage() {
       message: "",
       hearAbout: "",
     });
+  };
+
+  const handleSelectChange = (name: string, value: string | null) => {
+    if (value === null) return;
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleChange = (
@@ -623,20 +634,23 @@ export default function SponsorshipPage() {
                         Country *
                       </label>
                       <Select
-                        name="country"
-                        required
                         value={formData.country}
-                        onChange={handleChange}
-                        className="mt-3"
+                        onValueChange={(v) => handleSelectChange("country", v)}
                       >
-                        <option value="">Select Country</option>
-                        <option value="Nigeria">Nigeria</option>
-                        <option value="Ghana">Ghana</option>
-                        <option value="Kenya">Kenya</option>
-                        <option value="South Africa">South Africa</option>
-                        <option value="Rwanda">Rwanda</option>
-                        <option value="Egypt">Egypt</option>
-                        <option value="Other">Other</option>
+                        <SelectTrigger className="w-full" aria-required>
+                          <SelectValue placeholder="Select Country" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Nigeria">Nigeria</SelectItem>
+                          <SelectItem value="Ghana">Ghana</SelectItem>
+                          <SelectItem value="Kenya">Kenya</SelectItem>
+                          <SelectItem value="South Africa">
+                            South Africa
+                          </SelectItem>
+                          <SelectItem value="Rwanda">Rwanda</SelectItem>
+                          <SelectItem value="Egypt">Egypt</SelectItem>
+                          <SelectItem value="Other">Other</SelectItem>
+                        </SelectContent>
                       </Select>
                     </div>
                   </div>
@@ -647,25 +661,27 @@ export default function SponsorshipPage() {
                         Budget Range
                       </label>
                       <Select
-                        name="budget"
                         value={formData.budget}
-                        onChange={handleChange}
-                        className="mt-3"
+                        onValueChange={(v) => handleSelectChange("budget", v)}
                       >
-                        <option value="">Select budget range</option>
-                        <option value="$5,000 - $10,000">
-                          $5,000 - $10,000
-                        </option>
-                        <option value="$10,000 - $25,000">
-                          $10,000 - $25,000
-                        </option>
-                        <option value="$25,000 - $50,000">
-                          $25,000 - $50,000
-                        </option>
-                        <option value="$50,000 - $100,000">
-                          $50,000 - $100,000
-                        </option>
-                        <option value="$100,000+">$100,000+</option>
+                        <SelectTrigger className="w-full">
+                          <SelectValue placeholder="Select budget range" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="$5,000 - $10,000">
+                            $5,000 - $10,000
+                          </SelectItem>
+                          <SelectItem value="$10,000 - $25,000">
+                            $10,000 - $25,000
+                          </SelectItem>
+                          <SelectItem value="$25,000 - $50,000">
+                            $25,000 - $50,000
+                          </SelectItem>
+                          <SelectItem value="$50,000 - $100,000">
+                            $50,000 - $100,000
+                          </SelectItem>
+                          <SelectItem value="$100,000+">$100,000+</SelectItem>
+                        </SelectContent>
                       </Select>
                     </div>
                     <div>
@@ -673,18 +689,22 @@ export default function SponsorshipPage() {
                         How did you hear about us?
                       </label>
                       <Select
-                        name="hearAbout"
                         value={formData.hearAbout}
-                        onChange={handleChange}
-                        className="mt-3"
+                        onValueChange={(v) =>
+                          handleSelectChange("hearAbout", v)
+                        }
                       >
-                        <option value="">Select an option</option>
-                        <option value="LinkedIn">LinkedIn</option>
-                        <option value="Twitter/X">Twitter/X</option>
-                        <option value="Email">Email</option>
-                        <option value="Colleague">Colleague</option>
-                        <option value="Website">Website</option>
-                        <option value="Other">Other</option>
+                        <SelectTrigger className="w-full">
+                          <SelectValue placeholder="Select an option" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="LinkedIn">LinkedIn</SelectItem>
+                          <SelectItem value="Twitter/X">Twitter/X</SelectItem>
+                          <SelectItem value="Email">Email</SelectItem>
+                          <SelectItem value="Colleague">Colleague</SelectItem>
+                          <SelectItem value="Website">Website</SelectItem>
+                          <SelectItem value="Other">Other</SelectItem>
+                        </SelectContent>
                       </Select>
                     </div>
                   </div>

@@ -1,6 +1,5 @@
 // app/layout.tsx
 import type { Metadata } from "next";
-import Script from "next/script";
 import {
   Geist,
   Geist_Mono,
@@ -9,6 +8,7 @@ import {
   DM_Sans,
   Bebas_Neue,
 } from "next/font/google";
+import { GoogleTagManager } from "@next/third-parties/google";
 
 import "./globals.css";
 import Footer from "@/components/Footer";
@@ -45,7 +45,6 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-// Add Bebas Neue font
 const bebasNeue = Bebas_Neue({
   subsets: ["latin"],
   weight: ["400"],
@@ -68,7 +67,7 @@ export const metadata: Metadata = {
 };
 
 const gtmId = process.env.NEXT_PUBLIC_GTM_ID;
-const gaId = process.env.NEXT_PUBLIC_GA_ID;
+const GOOGLE_ADS_ID = "AW-18453740960";
 
 export default function RootLayout({
   children,
@@ -81,33 +80,18 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} ${cormorant.variable} ${syne.variable} ${dmSans.variable} ${bebasNeue.variable} h-full antialiased`}
     >
       <head>
-        {gtmId ? (
-          <Script id="gtm-script" strategy="afterInteractive">
-            {`(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-            new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-            j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-            'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-            })(window,document,'script','dataLayer','${gtmId}');`}
-          </Script>
-        ) : null}
-        {gaId ? (
-          <>
-            <Script
-              src={`https://www.googletagmanager.com/gtag/js?id=${gaId}`}
-              strategy="afterInteractive"
-            />
-            <Script id="gtag-init" strategy="afterInteractive">
-              {`window.dataLayer = window.dataLayer || [];
-              function gtag(){dataLayer.push(arguments);}
-              gtag('js', new Date());
-              gtag('config', '${gaId}');`}
-            </Script>
-          </>
-        ) : null}
+        {/*
+          Google tag (gtag.js) — Google Ads conversion tracking.
+          Loaded on every page as instructed by Google:
+          https://support.google.com/google-ads/answer/6095821
 
+          Kept as raw <script> tags (rather than next/script) because this
+          is the exact markup Google's tag instructions require, and it
+          must run before any conversion event fires.
+        */}
         <script
           async
-          src="https://www.googletagmanager.com/gtag/js?id=AW-18453740960"
+          src={`https://www.googletagmanager.com/gtag/js?id=${GOOGLE_ADS_ID}`}
         />
         <script
           dangerouslySetInnerHTML={{
@@ -115,22 +99,21 @@ export default function RootLayout({
               window.dataLayer = window.dataLayer || [];
               function gtag(){dataLayer.push(arguments);}
               gtag('js', new Date());
-              gtag('config', 'AW-18453740960');
+              gtag('config', '${GOOGLE_ADS_ID}');
             `,
           }}
         />
       </head>
+
+      {/*
+        Google Tag Manager — loads the GTM container for every route.
+        Placed between <html> and <body> per the Next.js docs:
+        https://nextjs.org/docs/app/building-your-application/optimizing/third-party-libraries#google-tag-manager
+        The component also injects the <noscript> fallback iframe.
+      */}
+      {gtmId ? <GoogleTagManager gtmId={gtmId} /> : null}
+
       <body className="min-h-full flex flex-col">
-        {gtmId ? (
-          <noscript>
-            <iframe
-              src={`https://www.googletagmanager.com/ns.html?id=${gtmId}`}
-              height="0"
-              width="0"
-              style={{ display: "none", visibility: "hidden" }}
-            />
-          </noscript>
-        ) : null}
         <Navbar />
         <main>{children}</main>
         <Footer />

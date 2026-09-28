@@ -18,7 +18,13 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
-import { Select } from "../../components/ui/Select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/Select";
 
 interface ExhibitionPackage {
   icon: LucideIcon;
@@ -218,6 +224,11 @@ export default function ExhibitionPage() {
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const handleSelectChange = (name: string, value: string | null) => {
+    if (value === null) return;
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   return (
@@ -828,7 +839,7 @@ export default function ExhibitionPage() {
                         required
                         value={formData.fullName}
                         onChange={handleChange}
-                        className="w-full px-3 py-2 border border-[#d4d8d0] rounded-md text-sm focus:outline-none focus:border-[#3B6D11]  placeholder:text-stone-400 placeholder:text-stone-400"
+                        className="w-full px-3 py-2 border border-[#d4d8d0] rounded-md text-sm focus:outline-none focus:border-[#3B6D11] placeholder:text-stone-400"
                         placeholder="John Doe"
                       />
                     </div>
@@ -842,7 +853,7 @@ export default function ExhibitionPage() {
                         required
                         value={formData.email}
                         onChange={handleChange}
-                        className="w-full px-3 py-2 border border-[#d4d8d0] rounded-md text-sm focus:outline-none focus:border-[#3B6D11]  placeholder:text-stone-400 placeholder:text-stone-400"
+                        className="w-full px-3 py-2 border border-[#d4d8d0] rounded-md text-sm focus:outline-none focus:border-[#3B6D11] placeholder:text-stone-400"
                         placeholder="john@company.com"
                       />
                     </div>
@@ -856,7 +867,7 @@ export default function ExhibitionPage() {
                         required
                         value={formData.phone}
                         onChange={handleChange}
-                        className="w-full px-3 py-2 border border-[#d4d8d0] rounded-md text-sm focus:outline-none focus:border-[#3B6D11]  placeholder:text-stone-400 placeholder:text-stone-400"
+                        className="w-full px-3 py-2 border border-[#d4d8d0] rounded-md text-sm focus:outline-none focus:border-[#3B6D11] placeholder:text-stone-400"
                         placeholder="+234 801 234 5678"
                       />
                     </div>
@@ -870,7 +881,7 @@ export default function ExhibitionPage() {
                         required
                         value={formData.organization}
                         onChange={handleChange}
-                        className="w-full px-3 py-2 border border-[#d4d8d0] rounded-md text-sm focus:outline-none focus:border-[#3B6D11]  placeholder:text-stone-400 placeholder:text-stone-400"
+                        className="w-full px-3 py-2 border border-[#d4d8d0] rounded-md text-sm focus:outline-none focus:border-[#3B6D11] placeholder:text-stone-400"
                         placeholder="Company Name"
                       />
                     </div>
@@ -883,7 +894,7 @@ export default function ExhibitionPage() {
                         name="position"
                         value={formData.position}
                         onChange={handleChange}
-                        className="w-full px-3 py-2 border border-[#d4d8d0] rounded-md text-sm focus:outline-none focus:border-[#3B6D11]  placeholder:text-stone-400 placeholder:text-stone-400"
+                        className="w-full px-3 py-2 border border-[#d4d8d0] rounded-md text-sm focus:outline-none focus:border-[#3B6D11] placeholder:text-stone-400"
                         placeholder="CEO, Director, etc."
                       />
                     </div>
@@ -892,20 +903,23 @@ export default function ExhibitionPage() {
                         Country *
                       </label>
                       <Select
-                        name="country"
-                        required
                         value={formData.country}
-                        onChange={handleChange}
-                        className="mt-3"
+                        onValueChange={(v) => handleSelectChange("country", v)}
                       >
-                        <option value="">Select Country</option>
-                        <option value="Nigeria">Nigeria</option>
-                        <option value="Ghana">Ghana</option>
-                        <option value="Kenya">Kenya</option>
-                        <option value="South Africa">South Africa</option>
-                        <option value="Rwanda">Rwanda</option>
-                        <option value="Egypt">Egypt</option>
-                        <option value="Other">Other</option>
+                        <SelectTrigger className="w-full">
+                          <SelectValue placeholder="Select Country" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Nigeria">Nigeria</SelectItem>
+                          <SelectItem value="Ghana">Ghana</SelectItem>
+                          <SelectItem value="Kenya">Kenya</SelectItem>
+                          <SelectItem value="South Africa">
+                            South Africa
+                          </SelectItem>
+                          <SelectItem value="Rwanda">Rwanda</SelectItem>
+                          <SelectItem value="Egypt">Egypt</SelectItem>
+                          <SelectItem value="Other">Other</SelectItem>
+                        </SelectContent>
                       </Select>
                     </div>
                   </div>
