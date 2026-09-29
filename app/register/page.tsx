@@ -1518,7 +1518,7 @@ function RegisterContent() {
                 noValidate
                 className="space-y-6"
               >
-                <div className="bg-white border border-[#d4d8d0] rounded-xl p-6">
+                <div className="bg-white border border-[#d4d8d0] rounded-xl p-4 sm:p-6">
                   <SummaryBar
                     name={selectedPackageData?.name}
                     price={selectedPackageData?.priceFormatted}
@@ -1533,8 +1533,7 @@ function RegisterContent() {
                       <div className="flex items-center justify-between gap-3 rounded-lg border border-[#3B6D11]/30 bg-[#eaf3de] px-4 py-3">
                         <p className="text-sm text-[#1a2b1a] flex items-center gap-2">
                           <Ticket className="w-4 h-4 text-[#3B6D11] shrink-0" />
-                          Coupon <strong>{appliedCoupon}</strong> applied — this
-                          registration will be <strong>free</strong>.
+                          Coupon <strong>{appliedCoupon}</strong>.
                         </p>
                         <button
                           type="button"
