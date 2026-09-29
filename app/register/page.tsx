@@ -28,6 +28,8 @@ import {
   GraduationCap,
   BookOpen,
   AlertCircle,
+  Ticket,
+  PartyPopper,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import {
@@ -105,6 +107,7 @@ interface RegistrationPackage {
 }
 
 type Step = 1 | 2 | 3;
+type CouponStatus = "idle" | "checking" | "valid" | "invalid";
 
 interface FormState {
   fullName: string;
@@ -225,7 +228,9 @@ const LEVELS = [
 
 const emailForReceipt = "info@aspirewestafrica.com";
 const DEFAULT_PACKAGE = "student";
+const COUPON_PACKAGE = "single";
 const STORAGE_KEY = "gammat-2026-register-form";
+const COUPON_STORAGE_KEY = "gammat-2026-register-coupon";
 
 const EMPTY_FORM: FormState = {
   fullName: "",
@@ -257,12 +262,15 @@ const FIELD_ORDER: FieldName[] = [
      step 1 → /register?student&step=package
      step 2 → /register?student
      step 3 → /register?student&step=payment
+     coupon → /register?single&coupon=CODE[&step=payment]
 ───────────────────────────────────────────────────────────── */
 
-const buildUrl = (step: Step, pkg: string) => {
-  if (step === 1) return `/register?${pkg}&step=package`;
-  if (step === 2) return `/register?${pkg}`;
-  return `/register?${pkg}&step=payment`;
+const buildUrl = (step: Step, pkg: string, coupon?: string | null): string => {
+  const parts: string[] = [pkg];
+  if (coupon) parts.push(`coupon=${encodeURIComponent(coupon)}`);
+  if (step === 1) parts.push("step=package");
+  else if (step === 3) parts.push("step=payment");
+  return `/register?${parts.join("&")}`;
 };
 
 /* ─────────────────────────────────────────────────────────────
@@ -505,10 +513,14 @@ function SelectField({
 function SummaryBar({
   name,
   price,
+  isFree,
+  couponCode,
   onChange,
 }: {
   name?: string;
   price?: string;
+  isFree?: boolean;
+  couponCode?: string | null;
   onChange?: () => void;
 }) {
   return (
@@ -529,7 +541,19 @@ function SummaryBar({
         </div>
         <div className="text-right">
           <p className="text-xs text-[#4a5a4a]/70 mb-1">Total Amount</p>
-          <p className="text-xl font-bold text-[#3B6D11]">{price}</p>
+          {isFree ? (
+            <>
+              <p className="text-xs text-[#4a5a4a]/50 line-through">{price}</p>
+              <p className="text-xl font-bold text-[#3B6D11]">FREE</p>
+              {couponCode && (
+                <p className="text-[11px] text-[#3B6D11]/70 mt-0.5">
+                  via {couponCode}
+                </p>
+              )}
+            </>
+          ) : (
+            <p className="text-xl font-bold text-[#3B6D11]">{price}</p>
+          )}
         </div>
       </div>
     </div>
@@ -577,6 +601,7 @@ function RegisterContent() {
   /* ── Resolve package + step from the URL ───────────────────
      /register?package=student  → explicit
      /register?student          → shorthand
+     /register?coupon=CODE      → implies Single package
      step=1 | package           → package selection
      step=2 | details           → details form
      step=3 | payment           → payment
@@ -587,7 +612,10 @@ function RegisterContent() {
       return direct;
     }
     const shorthand = registrationPackages.find((p) => searchParams.has(p.id));
-    return shorthand?.id ?? null;
+    if (shorthand) return shorthand.id;
+    // A coupon in the URL implies the Single package.
+    if (searchParams.has("coupon")) return COUPON_PACKAGE;
+    return null;
   }, [searchParams]);
 
   const urlStep = useMemo<Step | null>(() => {
@@ -596,6 +624,11 @@ function RegisterContent() {
     if (s === "2" || s === "details") return 2;
     if (s === "3" || s === "payment") return 3;
     return null;
+  }, [searchParams]);
+
+  const urlCoupon = useMemo<string | null>(() => {
+    const c = searchParams.get("coupon");
+    return c ? c.trim().toUpperCase() : null;
   }, [searchParams]);
 
   // The step is derived from the URL, so the browser back/forward
@@ -624,6 +657,17 @@ function RegisterContent() {
   const [submitted, setSubmitted] = useState(false);
   const [paymentError, setPaymentError] = useState<string | null>(null);
   const [paystackReady, setPaystackReady] = useState(false);
+  const [paystackFailed, setPaystackFailed] = useState(false);
+
+  // ── Coupon code (only valid on the Single package) ──
+  const [couponInput, setCouponInput] = useState("");
+  const [showCouponField, setShowCouponField] = useState(false);
+  const [couponStatus, setCouponStatus] = useState<CouponStatus>("idle");
+  const [couponError, setCouponError] = useState<string | null>(null);
+  const [appliedCoupon, setAppliedCoupon] = useState<string | null>(null);
+
+  // The coupon only counts when the Single package is selected.
+  const isFree = !!appliedCoupon && selectedPackage === COUPON_PACKAGE;
 
   const stepperRef = useRef<HTMLDivElement>(null);
   const firstRender = useRef(true);
@@ -648,17 +692,30 @@ function RegisterContent() {
   /* ── Navigation ─────────────────────────────────────────── */
 
   // Navigating to a non-payment step always resets the payment UI.
+  // If the target package isn't the coupon-eligible one, the coupon
+  // is stripped from the URL (but kept in state until we navigate).
   const goToStep = useCallback(
-    (nextStep: Step, pkg: string, mode: "push" | "replace" = "push") => {
+    (
+      nextStep: Step,
+      pkg: string,
+      mode: "push" | "replace" = "push",
+      couponOverride?: string | null
+    ) => {
       if (nextStep !== 3) {
         setPaymentMethod(null);
         setPaymentError(null);
       }
-      const url = buildUrl(nextStep, pkg);
+      const couponToUse =
+        couponOverride !== undefined
+          ? couponOverride
+          : pkg === COUPON_PACKAGE
+          ? appliedCoupon
+          : null;
+      const url = buildUrl(nextStep, pkg, couponToUse);
       if (mode === "replace") router.replace(url, { scroll: false });
       else router.push(url, { scroll: false });
     },
-    [router]
+    [router, appliedCoupon]
   );
 
   // Scroll to the top of the form whenever the step changes.
@@ -670,7 +727,7 @@ function RegisterContent() {
     stepperRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   }, [step]);
 
-  /* ── Remember the form (refresh, back button, direct links) ── */
+  /* ── Remember the form + coupon (refresh, back button) ── */
 
   useEffect(() => {
     // One-time hydration from sessionStorage. sessionStorage has no
@@ -686,6 +743,14 @@ function RegisterContent() {
         return prev;
       }
     });
+    try {
+      const savedCoupon = sessionStorage.getItem(COUPON_STORAGE_KEY);
+      if (savedCoupon) {
+        setAppliedCoupon(savedCoupon);
+      }
+    } catch {
+      // ignore
+    }
     setHydrated(true);
   }, []);
 
@@ -697,6 +762,19 @@ function RegisterContent() {
       // ignore
     }
   }, [formData, hydrated, submitted]);
+
+  useEffect(() => {
+    if (!hydrated || submitted) return;
+    try {
+      if (appliedCoupon) {
+        sessionStorage.setItem(COUPON_STORAGE_KEY, appliedCoupon);
+      } else {
+        sessionStorage.removeItem(COUPON_STORAGE_KEY);
+      }
+    } catch {
+      // ignore
+    }
+  }, [appliedCoupon, hydrated, submitted]);
 
   // Someone landing on ?step=payment with an incomplete form
   // goes back to the details step instead of paying with empty data.
@@ -712,28 +790,107 @@ function RegisterContent() {
     }
   }, [hydrated, submitted, step, hasErrors, selectedPackage, goToStep]);
 
+  // If the selected package ever changes away from Single while a
+  // coupon is applied (e.g. via the browser back/forward buttons),
+  // drop the coupon — it no longer applies.
+  useEffect(() => {
+    if (selectedPackage !== COUPON_PACKAGE && appliedCoupon) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setAppliedCoupon(null);
+      setCouponStatus("idle");
+      setCouponError(null);
+      setShowCouponField(false);
+      setCouponInput("");
+    }
+  }, [selectedPackage, appliedCoupon]);
+
+  /* ── Auto-validate a coupon that arrived via the URL ──
+     Visiting /register?coupon=GAMMATFREE lands the user on the
+     Single package, at the details step, with the coupon applied
+     as soon as the server confirms it. Every setState here runs
+     after an await, so the effect body has no synchronous setState. */
+  useEffect(() => {
+    if (!hydrated || submitted) return;
+    if (!urlCoupon) return;
+    if (selectedPackage !== COUPON_PACKAGE) return;
+    if (appliedCoupon === urlCoupon) return;
+
+    const controller = new AbortController();
+    let cancelled = false;
+
+    void (async () => {
+      try {
+        const response = await fetch("/api/validate-coupon", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            code: urlCoupon,
+            packageId: selectedPackage,
+          }),
+          signal: controller.signal,
+        });
+        const result = await response.json();
+        if (cancelled) return;
+
+        if (response.ok && result.valid) {
+          setAppliedCoupon(urlCoupon);
+          setCouponStatus("valid");
+          setCouponError(null);
+        } else {
+          setCouponStatus("invalid");
+          setCouponError(
+            result.message || "That coupon code isn't valid or has expired."
+          );
+          setCouponInput(urlCoupon);
+          setShowCouponField(true);
+        }
+      } catch (err) {
+        if (cancelled) return;
+        if ((err as Error).name === "AbortError") return;
+        setCouponStatus("invalid");
+        setCouponError(
+          "Couldn't check that code. Check your connection and try again."
+        );
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+      controller.abort();
+    };
+  }, [urlCoupon, appliedCoupon, hydrated, submitted, selectedPackage]);
+
   /* ── Paystack script ────────────────────────────────────── */
 
   useEffect(() => {
     const src = "https://js.paystack.co/v1/inline.js";
-    const markReady = () => setPaystackReady(true);
-    const existing = document.querySelector(`script[src="${src}"]`);
-    if (existing) {
-      if (window.PaystackPop) {
-        // Defer so we don't call setState synchronously inside the
-        // effect body (React would otherwise cascade an extra render
-        // before the effect finishes).
-        queueMicrotask(markReady);
-      } else {
-        existing.addEventListener("load", markReady);
-      }
+    const onLoad = () => {
+      setPaystackReady(true);
+      setPaystackFailed(false);
+    };
+    const onError = () => setPaystackFailed(true);
+
+    if (window.PaystackPop) {
+      onLoad();
       return;
     }
-    const script = document.createElement("script");
-    script.src = src;
-    script.async = true;
-    script.onload = markReady;
-    document.body.appendChild(script);
+
+    let script = document.querySelector<HTMLScriptElement>(
+      `script[src="${src}"]`
+    );
+    if (!script) {
+      script = document.createElement("script");
+      script.src = src;
+      script.async = true;
+      document.body.appendChild(script);
+    }
+    script.addEventListener("load", onLoad);
+    script.addEventListener("error", onError);
+
+    return () => {
+      script?.removeEventListener("load", onLoad);
+      script?.removeEventListener("error", onError);
+    };
   }, []);
 
   /* ── Analytics ──────────────────────────────────────────── */
@@ -827,6 +984,7 @@ function RegisterContent() {
   const handleReset = () => {
     try {
       sessionStorage.removeItem(STORAGE_KEY);
+      sessionStorage.removeItem(COUPON_STORAGE_KEY);
     } catch {
       // ignore
     }
@@ -836,9 +994,68 @@ function RegisterContent() {
     setTouched({});
     setAttemptedSubmit(false);
     setFormData(EMPTY_FORM);
-    // Navigating to /register clears urlPackage, so the derived
+    setAppliedCoupon(null);
+    setCouponInput("");
+    setCouponStatus("idle");
+    setCouponError(null);
+    setShowCouponField(false);
+    // Navigating to /register clears urlPackage and urlCoupon, so
     // `selectedPackage` falls back to DEFAULT_PACKAGE.
     router.push("/register", { scroll: false });
+  };
+
+  /* ── Coupon handlers ────────────────────────────────────── */
+
+  const handleApplyCoupon = async () => {
+    const code = couponInput.trim().toUpperCase();
+    if (!code) {
+      setCouponStatus("invalid");
+      setCouponError("Enter a coupon code.");
+      return;
+    }
+
+    setCouponStatus("checking");
+    setCouponError(null);
+
+    try {
+      const response = await fetch("/api/validate-coupon", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code, packageId: selectedPackage }),
+      });
+      const result = await response.json();
+
+      if (response.ok && result.valid) {
+        setAppliedCoupon(code);
+        setCouponStatus("valid");
+        setShowCouponField(false);
+        setCouponInput("");
+        // Reflect the coupon in the URL so it's shareable.
+        router.replace(buildUrl(step, selectedPackage, code), {
+          scroll: false,
+        });
+      } else {
+        setCouponStatus("invalid");
+        setCouponError(result.message || "That coupon code isn't valid.");
+      }
+    } catch {
+      setCouponStatus("invalid");
+      setCouponError(
+        "Couldn't check that code. Check your connection and try again."
+      );
+    }
+  };
+
+  const handleRemoveCoupon = () => {
+    setAppliedCoupon(null);
+    setCouponInput("");
+    setCouponStatus("idle");
+    setCouponError(null);
+    setShowCouponField(false);
+    setPaymentMethod(null);
+    setPaymentError(null);
+    // Strip the coupon param from the URL.
+    router.replace(buildUrl(step, selectedPackage, null), { scroll: false });
   };
 
   /* ── Submission ─────────────────────────────────────────── */
@@ -849,6 +1066,15 @@ function RegisterContent() {
           formData.level || "N/A"
         }\nCourse of Study: ${formData.course.trim() || "N/A"}`
       : "";
+
+    const couponDetails = appliedCoupon
+      ? `\nCoupon Code: ${appliedCoupon}\nAmount Paid: ₦0 (free via coupon)`
+      : "";
+
+    // Human-readable amount for the email
+    const amountPaidFormatted = isFree
+      ? "₦0 (free via coupon)"
+      : selectedPackageData?.priceFormatted ?? "N/A";
 
     const response = await fetch("/api/get-involved", {
       method: "POST",
@@ -862,15 +1088,19 @@ function RegisterContent() {
           : formData.organization.trim(),
         packageName: selectedPackageData?.name,
         inquiryType: isStudent ? "Student Registration" : "Registration",
+        // ── New explicit fields so the email layer can highlight free regs ──
+        isFree,
+        couponCode: appliedCoupon,
+        amountPaidFormatted,
         message: `Registration details:\nPackage: ${
           selectedPackageData?.name
         }\nPrice: ${selectedPackageData?.priceFormatted}\nUSD Price: ${
           selectedPackageData?.usdPrice
-        }\nPayment Method: ${paymentMethod ?? "Not selected"}\nDelegates: ${
-          formData.delegates || "N/A"
-        }\nPosition/Title: ${
+        }\nPayment Method: ${
+          isFree ? "Coupon (Free)" : paymentMethod ?? "Not selected"
+        }\nDelegates: ${formData.delegates || "N/A"}\nPosition/Title: ${
           formData.position.trim() || "N/A"
-        }${studentDetails}\nSpecial Requests: ${
+        }${studentDetails}${couponDetails}\nSpecial Requests: ${
           formData.specialRequests.trim() || "None"
         }`,
       }),
@@ -983,12 +1213,38 @@ function RegisterContent() {
     }
   };
 
+  // Free registration — no payment step, just confirm and send.
+  const handleFreeSubmit = async () => {
+    if (isSubmitting) return;
+    setPaymentError(null);
+    setIsSubmitting(true);
+
+    try {
+      await sendRegistrationInquiry();
+      setSubmitted(true);
+      try {
+        sessionStorage.removeItem(STORAGE_KEY);
+        sessionStorage.removeItem(COUPON_STORAGE_KEY);
+      } catch {
+        // ignore
+      }
+      trackGoogleAdsConversion();
+    } catch (error) {
+      console.error("Error submitting free registration:", error);
+      setPaymentError(
+        "We couldn't complete your free registration. Check your connection and try again."
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   /* ── Stepper ────────────────────────────────────────────── */
 
   const steps: { n: Step; label: string }[] = [
     { n: 1, label: "Select Package" },
     { n: 2, label: "Your Details" },
-    { n: 3, label: "Payment" },
+    { n: 3, label: isFree ? "Confirm" : "Payment" },
   ];
 
   /* ─────────────────────────────────────────────────────────
@@ -1105,6 +1361,19 @@ function RegisterContent() {
               Thank you for registering for GAMMAT 2026. A confirmation email
               has been sent to {formData.email}.
             </p>
+
+            {isFree && (
+              <div className="bg-white rounded-lg p-4 mb-4 text-left">
+                <p className="text-sm text-[#3B6D11] font-semibold mb-2 flex items-center gap-2">
+                  <PartyPopper className="w-4 h-4" />
+                  Free Registration
+                </p>
+                <p className="text-sm text-[#4a5a4a]">
+                  Your registration was completed at no cost using the coupon{" "}
+                  <strong className="text-[#1a2b1a]">{appliedCoupon}</strong>.
+                </p>
+              </div>
+            )}
 
             {isStudent && (
               <div className="bg-white rounded-lg p-4 mb-4 text-left">
@@ -1253,8 +1522,107 @@ function RegisterContent() {
                   <SummaryBar
                     name={selectedPackageData?.name}
                     price={selectedPackageData?.priceFormatted}
+                    isFree={isFree}
+                    couponCode={appliedCoupon}
                     onChange={() => goToStep(1, selectedPackage)}
                   />
+
+                  {/* ── Coupon code ── */}
+                  <div className="mb-6">
+                    {isFree ? (
+                      <div className="flex items-center justify-between gap-3 rounded-lg border border-[#3B6D11]/30 bg-[#eaf3de] px-4 py-3">
+                        <p className="text-sm text-[#1a2b1a] flex items-center gap-2">
+                          <Ticket className="w-4 h-4 text-[#3B6D11] shrink-0" />
+                          Coupon <strong>{appliedCoupon}</strong> applied — this
+                          registration will be <strong>free</strong>.
+                        </p>
+                        <button
+                          type="button"
+                          onClick={handleRemoveCoupon}
+                          className="text-xs font-semibold text-[#3B6D11] hover:underline shrink-0"
+                        >
+                          Remove
+                        </button>
+                      </div>
+                    ) : showCouponField ? (
+                      <div className="rounded-lg border border-[#d4d8d0] bg-[#f7f6f2] p-4">
+                        <label
+                          htmlFor="couponCode"
+                          className="block text-sm font-medium text-[#1a2b1a] mb-2"
+                        >
+                          Coupon Code
+                        </label>
+                        <div className="flex flex-col sm:flex-row gap-2">
+                          <input
+                            id="couponCode"
+                            type="text"
+                            value={couponInput}
+                            onChange={(e) => {
+                              setCouponInput(e.target.value);
+                              if (couponStatus === "invalid") {
+                                setCouponStatus("idle");
+                                setCouponError(null);
+                              }
+                            }}
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter") {
+                                e.preventDefault();
+                                handleApplyCoupon();
+                              }
+                            }}
+                            placeholder="e.g. GAMMATFREE"
+                            autoCapitalize="characters"
+                            aria-invalid={couponStatus === "invalid"}
+                            aria-describedby={
+                              couponError ? "coupon-error" : undefined
+                            }
+                            className={inputClass(couponStatus === "invalid")}
+                          />
+                          <button
+                            type="button"
+                            onClick={handleApplyCoupon}
+                            disabled={couponStatus === "checking"}
+                            className="inline-flex items-center justify-center px-5 py-2.5 bg-[#2d6e2e] border border-[#3d9e3e] rounded-md text-sm font-bold text-white hover:bg-[#3a8a3b] transition-colors disabled:opacity-50 shrink-0"
+                          >
+                            {couponStatus === "checking"
+                              ? "Checking..."
+                              : "Apply"}
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setShowCouponField(false);
+                              setCouponInput("");
+                              setCouponStatus("idle");
+                              setCouponError(null);
+                            }}
+                            className="inline-flex items-center justify-center px-4 py-2.5 text-sm font-semibold text-[#4a5a4a] hover:text-[#1a2b1a]"
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                        {couponError && (
+                          <p
+                            id="coupon-error"
+                            role="alert"
+                            className="flex items-center gap-1.5 text-xs text-red-600 mt-2"
+                          >
+                            <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+                            {couponError}
+                          </p>
+                        )}
+                      </div>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() => setShowCouponField(true)}
+                        className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#3B6D11] hover:underline"
+                      >
+                        <Ticket className="w-3.5 h-3.5" />
+                        Have a coupon code?
+                      </button>
+                    )}
+                  </div>
 
                   <h2
                     className="text-xl font-black text-[#1a2b1a] mb-1"
@@ -1438,20 +1806,22 @@ function RegisterContent() {
                     type="submit"
                     className="inline-flex items-center gap-2 px-8 py-3 bg-[#2d6e2e] border border-[#3d9e3e] rounded-md text-sm font-bold tracking-wider uppercase text-white hover:bg-[#3a8a3b] transition-colors"
                   >
-                    Proceed to Payment
+                    {isFree ? "Continue" : "Proceed to Payment"}
                     <ChevronRight className="w-4 h-4" />
                   </button>
                 </div>
               </form>
             )}
 
-            {/* ───────── Step 3: Payment Method ───────── */}
+            {/* ───────── Step 3: Payment or Free Confirmation ───────── */}
             {step === 3 && !hasErrors && (
               <div className="space-y-6">
                 <div className="bg-white border border-[#d4d8d0] rounded-xl p-6">
                   <SummaryBar
                     name={selectedPackageData?.name}
                     price={selectedPackageData?.priceFormatted}
+                    isFree={isFree}
+                    couponCode={appliedCoupon}
                   />
 
                   <div className="mb-6 rounded-lg bg-[#f7f6f2] px-4 py-3 text-sm text-[#4a5a4a] flex items-center justify-between gap-4">
@@ -1477,10 +1847,46 @@ function RegisterContent() {
                     className="text-xl font-black text-[#1a2b1a] mb-6"
                     style={{ fontFamily: "'Bebas Neue', sans-serif" }}
                   >
-                    Select Payment Method
+                    {isFree ? "Confirm & Submit" : "Select Payment Method"}
                   </h2>
 
-                  {!paymentMethod ? (
+                  {isFree ? (
+                    /* ── Free registration — no payment needed ── */
+                    <div className="space-y-6">
+                      <div className="flex items-start gap-3 bg-[#eaf3de] rounded-lg p-4">
+                        <PartyPopper className="w-5 h-5 text-[#3B6D11] shrink-0 mt-0.5" />
+                        <p className="text-sm text-[#1a2b1a]">
+                          Coupon <strong>{appliedCoupon}</strong> makes this
+                          registration free. No payment is required — just
+                          confirm your details and submit.
+                        </p>
+                      </div>
+
+                      {paymentError && <ErrorBanner message={paymentError} />}
+
+                      <div className="flex justify-between gap-4">
+                        <button
+                          type="button"
+                          onClick={handleBack}
+                          className="inline-flex items-center gap-2 px-6 py-3 bg-white border border-[#d4d8d0] rounded-md text-sm font-semibold text-[#1a2b1a] hover:border-[#3B6D11] hover:bg-[#eaf3de] transition-colors"
+                        >
+                          <ChevronLeft className="w-4 h-4" />
+                          Back
+                        </button>
+                        <button
+                          type="button"
+                          onClick={handleFreeSubmit}
+                          disabled={isSubmitting}
+                          className="inline-flex items-center gap-2 px-8 py-3 bg-[#2d6e2e] border border-[#3d9e3e] rounded-md text-sm font-bold tracking-wider uppercase text-white hover:bg-[#3a8a3b] transition-colors disabled:opacity-50"
+                        >
+                          {isSubmitting
+                            ? "Submitting..."
+                            : "Complete Free Registration"}
+                          <Send className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </div>
+                  ) : !paymentMethod ? (
                     <div className="grid md:grid-cols-2 gap-4">
                       <button
                         type="button"
@@ -1522,6 +1928,10 @@ function RegisterContent() {
                               complete your payment without leaving this page.
                             </p>
                           </div>
+
+                          {paystackFailed && (
+                            <ErrorBanner message="We couldn't load the payment window. Turn off any ad blocker for this site, check your connection, then reload the page. You can also pay by bank transfer instead." />
+                          )}
 
                           {paymentError && (
                             <ErrorBanner message={paymentError} />
@@ -1759,7 +2169,7 @@ function RegisterContent() {
                   )}
                 </div>
 
-                {!paymentMethod && (
+                {!isFree && !paymentMethod && (
                   <div className="flex justify-start">
                     <button
                       type="button"
