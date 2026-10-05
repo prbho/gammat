@@ -1168,10 +1168,6 @@ function RegisterContent() {
         setIsSubmitting(true);
         try {
           await sendRegistrationInquiry();
-        } catch (error) {
-          console.error("Registration email send failed:", error);
-        } finally {
-          setIsSubmitting(false);
           setSubmitted(true);
           try {
             sessionStorage.removeItem(STORAGE_KEY);
@@ -1179,6 +1175,13 @@ function RegisterContent() {
             // ignore
           }
           trackGoogleAdsConversion();
+        } catch (error) {
+          console.error("Registration email send failed:", error);
+          setPaymentError(
+            "Your payment succeeded, but we couldn't send your registration details. Please contact us so we can confirm your registration."
+          );
+        } finally {
+          setIsSubmitting(false);
         }
       },
       onCancel: () => {

@@ -1,21 +1,11 @@
 import { NextResponse } from "next/server";
-import nodemailer from "nodemailer";
+import { Resend } from "resend";
 
 export const runtime = "nodejs";
 
 const ORGANISER_EMAIL =
   process.env.ORGANISER_EMAIL || "info@aspirewestafrica.com";
-const FROM_EMAIL = process.env.FROM_EMAIL || ORGANISER_EMAIL;
-
-const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST,
-  port: process.env.SMTP_PORT ? Number(process.env.SMTP_PORT) : 587,
-  secure: process.env.SMTP_SECURE === "true",
-  auth: {
-    user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASSWORD,
-  },
-});
+const FROM_EMAIL = process.env.FROM_EMAIL || "events@email.gammat.com.ng";
 
 interface ParticipationData {
   awardeeName: string;
@@ -112,37 +102,32 @@ const buildMessageHtml = (data: ParticipationData) => {
 };
 
 export async function POST(request: Request) {
-  if (
-    !process.env.SMTP_HOST ||
-    !process.env.SMTP_USER ||
-    !process.env.SMTP_PASSWORD
-  ) {
+  if (!process.env.RESEND_API_KEY) {
     return NextResponse.json(
       {
         success: false,
-        error:
-          "SMTP is not configured. Please set SMTP_HOST, SMTP_USER and SMTP_PASSWORD.",
+        error: "Resend is not configured. Please set RESEND_API_KEY.",
       },
       { status: 500 }
     );
   }
 
   try {
+    const resend = new Resend(process.env.RESEND_API_KEY);
     const data = (await request.json()) as ParticipationData;
     const messageText = buildMessage(data);
     const messageHtml = buildMessageHtml(data);
 
-    await transporter.sendMail({
+    const { error } = await resend.emails.send({
       from: `GAMMAT 2026 <${FROM_EMAIL}>`,
       to: ORGANISER_EMAIL,
       replyTo: data.email || FROM_EMAIL,
       subject: `GAMMAT 2026 participation request: ${data.awardeeName}`,
       text: messageText,
       html: messageHtml,
-      headers: {
-        "X-Mailer": "Nodemailer",
-      },
     });
+
+    if (error) throw new Error(error.message);
 
     return NextResponse.json({ success: true });
   } catch (error) {
