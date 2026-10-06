@@ -655,6 +655,7 @@ function RegisterContent() {
   const [copiedAccountId, setCopiedAccountId] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [confirmationEmailSent, setConfirmationEmailSent] = useState(false);
   const [paymentError, setPaymentError] = useState<string | null>(null);
   const [paystackReady, setPaystackReady] = useState(false);
   const [paystackFailed, setPaystackFailed] = useState(false);
@@ -989,6 +990,7 @@ function RegisterContent() {
       // ignore
     }
     setSubmitted(false);
+    setConfirmationEmailSent(false);
     setPaymentMethod(null);
     setPaymentError(null);
     setTouched({});
@@ -1088,6 +1090,7 @@ function RegisterContent() {
           : formData.organization.trim(),
         packageName: selectedPackageData?.name,
         inquiryType: isStudent ? "Student Registration" : "Registration",
+        paymentMethod: isFree ? "coupon" : paymentMethod ?? "",
         // ── New explicit fields so the email layer can highlight free regs ──
         isFree,
         couponCode: appliedCoupon,
@@ -1110,6 +1113,7 @@ function RegisterContent() {
     if (!response.ok || !result.success) {
       throw new Error(result.error || "Failed to send registration inquiry.");
     }
+    return result.confirmationEmailSent === true;
   };
 
   const handlePayWithPaystack = () => {
@@ -1167,7 +1171,8 @@ function RegisterContent() {
       onSuccess: async () => {
         setIsSubmitting(true);
         try {
-          await sendRegistrationInquiry();
+          const confirmationEmailSent = await sendRegistrationInquiry();
+          setConfirmationEmailSent(confirmationEmailSent);
           setSubmitted(true);
           try {
             sessionStorage.removeItem(STORAGE_KEY);
@@ -1198,7 +1203,8 @@ function RegisterContent() {
     setIsSubmitting(true);
 
     try {
-      await sendRegistrationInquiry();
+      const confirmationEmailSent = await sendRegistrationInquiry();
+      setConfirmationEmailSent(confirmationEmailSent);
       setSubmitted(true);
       try {
         sessionStorage.removeItem(STORAGE_KEY);
@@ -1223,7 +1229,8 @@ function RegisterContent() {
     setIsSubmitting(true);
 
     try {
-      await sendRegistrationInquiry();
+      const confirmationEmailSent = await sendRegistrationInquiry();
+      setConfirmationEmailSent(confirmationEmailSent);
       setSubmitted(true);
       try {
         sessionStorage.removeItem(STORAGE_KEY);
@@ -1361,8 +1368,9 @@ function RegisterContent() {
               Registration Successful!
             </h3>
             <p className="text-[#4a5a4a] mb-4">
-              Thank you for registering for GAMMAT 2026. A confirmation email
-              has been sent to {formData.email}.
+              {confirmationEmailSent
+                ? `A confirmation email has been sent to ${formData.email}.`
+                : "Your registration details were received, but we couldn't send the confirmation email. Please contact info@aspirewestafrica.com."}
             </p>
 
             {isFree && (

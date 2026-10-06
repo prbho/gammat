@@ -26,6 +26,7 @@ interface InquiryData {
   isFree?: boolean;
   couponCode?: string | null;
   amountPaidFormatted?: string;
+  paymentMethod?: string;
 }
 
 const escapeHtml = (str: string) =>
@@ -236,7 +237,36 @@ export async function POST(request: Request) {
 
     if (error) throw new Error(error.message);
 
-    return NextResponse.json({ success: true });
+    let confirmationEmailSent = false;
+    if (data.email) {
+      const isTransfer = data.paymentMethod === "transfer";
+      const statusMessage = isTransfer
+        ? "We have received your registration details. Your registration will be confirmed after your bank transfer is verified. Please send your payment receipt to info@aspirewestafrica.com."
+        : isFree
+        ? "Your registration is complete. No payment is required because your coupon covered the registration fee."
+        : "Your registration and payment have been received. Thank you for registering for GAMMAT 2026.";
+      const packageLine = data.packageName
+        ? `Package: ${data.packageName}\n`
+        : "";
+      const confirmation = await resend.emails.send({
+        from: `GAMMAT 2026 <${FROM_EMAIL}>`,
+        to: data.email,
+        replyTo: "info@aspirewestafrica.com",
+        subject: "GAMMAT 2026 registration received",
+        text: `Hello ${data.name},\n\n${statusMessage}\n\n${packageLine}For questions, reply to this email or contact info@aspirewestafrica.com.\n\nGAMMAT 2026`,
+        html: `<div style="font-family:Arial,sans-serif;color:#1a2b1a;line-height:1.6"><p>Hello ${escapeHtml(data.name)},</p><p>${escapeHtml(statusMessage)}</p>${packageLine ? `<p>${escapeHtml(packageLine.trim())}</p>` : ""}<p>For questions, reply to this email or contact <a href="mailto:info@aspirewestafrica.com">info@aspirewestafrica.com</a>.</p><p>GAMMAT 2026</p></div>`,
+      });
+      if (confirmation.error) {
+        console.error(
+          "Registration confirmation email send failed:",
+          confirmation.error.message
+        );
+      } else {
+        confirmationEmailSent = true;
+      }
+    }
+
+    return NextResponse.json({ success: true, confirmationEmailSent });
   } catch (error) {
     console.error("Get Involved email send failed:", error);
     return NextResponse.json(
