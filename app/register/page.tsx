@@ -104,6 +104,7 @@ interface RegistrationPackage {
   benefits: string[];
   popular: boolean;
   isStudent?: boolean;
+  isFree?: boolean;
 }
 
 type Step = 1 | 2 | 3;
@@ -132,6 +133,22 @@ type FormErrors = Partial<Record<FieldName, string>>;
 ───────────────────────────────────────────────────────────── */
 
 const registrationPackages: RegistrationPackage[] = [
+  {
+    id: "free",
+    name: "Free Pass",
+    price: 0,
+    priceFormatted: "₦0",
+    usdPrice: "$0",
+    icon: PartyPopper,
+    benefits: [
+      "General Session Access",
+      "Conference Attendance",
+      "Access to Public Networking",
+      "Event Updates",
+    ],
+    popular: false,
+    isFree: true,
+  },
   {
     id: "student",
     name: "Student Package",
@@ -163,6 +180,7 @@ const registrationPackages: RegistrationPackage[] = [
       "Certificate of Attendance",
       "Single Delegate Pass",
       "Conference Materials",
+      "Delegate Directory Access",
     ],
     popular: false,
   },
@@ -177,7 +195,7 @@ const registrationPackages: RegistrationPackage[] = [
       "Summit Access",
       "Networking Access",
       "Certificate of Attendance",
-      "10 Delegate Passes",
+      "10 Passes & Directory Access",
       "Conference Materials",
       "Group Discount Applied",
     ],
@@ -226,6 +244,7 @@ const LEVELS = [
 const emailForReceipt = "info@aspirewestafrica.com";
 const DEFAULT_PACKAGE = "student";
 const COUPON_PACKAGE = "single";
+const FREE_PACKAGE = "free";
 const STORAGE_KEY = "gammat-2026-register-form";
 const COUPON_STORAGE_KEY = "gammat-2026-register-coupon";
 
@@ -260,6 +279,7 @@ const FIELD_ORDER: FieldName[] = [
      step 2 → /register?student
      step 3 → /register?student&step=payment
      coupon → /register?single&coupon=CODE[&step=payment]
+     free   → /register?free[&step=payment]
 ───────────────────────────────────────────────────────────── */
 
 const buildUrl = (step: Step, pkg: string, coupon?: string | null): string => {
@@ -279,6 +299,7 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 const validate = (data: FormState, packageId: string): FormErrors => {
   const errors: FormErrors = {};
   const isStudent = packageId === "student";
+  const isFreeTier = packageId === FREE_PACKAGE;
 
   if (data.fullName.trim().length < 2) {
     errors.fullName = "Enter your full name.";
@@ -310,6 +331,9 @@ const validate = (data: FormState, packageId: string): FormErrors => {
     if (!data.studentId.trim()) {
       errors.studentId = "Enter your student ID or matric number.";
     }
+  } else if (isFreeTier) {
+    // Free Pass only requires name, email, and phone.
+    // Organization is optional so the flow stays frictionless.
   } else {
     if (!data.organization.trim()) {
       errors.organization = "Enter your organization.";
@@ -520,6 +544,9 @@ function SummaryBar({
   couponCode?: string | null;
   onChange?: () => void;
 }) {
+  const alreadyZero =
+    !price || price === "₦0" || price === "$0" || price === "FREE";
+
   return (
     <div className="mb-6 pb-6 border-b border-[#d4d8d0]">
       <div className="flex justify-between items-center gap-4">
@@ -540,7 +567,11 @@ function SummaryBar({
           <p className="text-xs text-[#4a5a4a]/70 mb-1">Total Amount</p>
           {isFree ? (
             <>
-              <p className="text-xs text-[#4a5a4a]/50 line-through">{price}</p>
+              {!alreadyZero && (
+                <p className="text-xs text-[#4a5a4a]/50 line-through">
+                  {price}
+                </p>
+              )}
               <p className="text-xl font-bold text-[#3B6D11]">FREE</p>
               {couponCode && (
                 <p className="text-[11px] text-[#3B6D11]/70 mt-0.5">
@@ -599,9 +630,10 @@ function RegisterContent() {
      /register?package=student  → explicit
      /register?student          → shorthand
      /register?coupon=CODE      → implies Single package
+     /register?free             → explicit free pass
      step=1 | package           → package selection
      step=2 | details           → details form
-     step=3 | payment           → payment
+     step=3 | payment           → payment / confirm
   ─────────────────────────────────────────────────────────── */
   const urlPackage = useMemo<string | null>(() => {
     const direct = searchParams.get("package");
@@ -664,9 +696,6 @@ function RegisterContent() {
   const [couponError, setCouponError] = useState<string | null>(null);
   const [appliedCoupon, setAppliedCoupon] = useState<string | null>(null);
 
-  // The coupon only counts when the Single package is selected.
-  const isFree = !!appliedCoupon && selectedPackage === COUPON_PACKAGE;
-
   const stepperRef = useRef<HTMLDivElement>(null);
   const firstRender = useRef(true);
 
@@ -674,7 +703,14 @@ function RegisterContent() {
     (p) => p.id === selectedPackage
   );
   const isStudent = selectedPackageData?.isStudent === true;
+  const isFreeTier = selectedPackageData?.isFree === true;
   const selectedBank = bankAccounts.find((b) => b.id === selectedBankAccount);
+
+  // Free registration now has two paths:
+  //   1. A valid coupon applied to the Single package.
+  //   2. The user explicitly selected the Free Pass package.
+  const isFree =
+    isFreeTier || (!!appliedCoupon && selectedPackage === COUPON_PACKAGE);
 
   const errors = useMemo(
     () => validate(formData, selectedPackage),
@@ -1068,12 +1104,23 @@ function RegisterContent() {
 
     const couponDetails = appliedCoupon
       ? `\nCoupon Code: ${appliedCoupon}\nAmount Paid: ₦0 (free via coupon)`
+      : isFreeTier
+      ? `\nAmount Paid: ₦0 (Free Pass)`
       : "";
 
     // Human-readable amount for the email
     const amountPaidFormatted = isFree
-      ? "₦0 (free via coupon)"
+      ? isFreeTier
+        ? "₦0 (Free Pass)"
+        : "₦0 (free via coupon)"
       : selectedPackageData?.priceFormatted ?? "N/A";
+
+    // Human-readable payment method for the email + API record.
+    const paymentMethodLabel = isFree
+      ? isFreeTier
+        ? "Free Pass"
+        : `Coupon (${appliedCoupon})`
+      : paymentMethod ?? "Not selected";
 
     const response = await fetch("/api/get-involved", {
       method: "POST",
@@ -1087,7 +1134,11 @@ function RegisterContent() {
           : formData.organization.trim(),
         packageName: selectedPackageData?.name,
         inquiryType: isStudent ? "Student Registration" : "Registration",
-        paymentMethod: isFree ? "coupon" : paymentMethod ?? "",
+        paymentMethod: isFree
+          ? isFreeTier
+            ? "free-pass"
+            : "coupon"
+          : paymentMethod ?? "",
         // ── New explicit fields so the email layer can highlight free regs ──
         isFree,
         couponCode: appliedCoupon,
@@ -1096,9 +1147,9 @@ function RegisterContent() {
           selectedPackageData?.name
         }\nPrice: ${selectedPackageData?.priceFormatted}\nUSD Price: ${
           selectedPackageData?.usdPrice
-        }\nPayment Method: ${
-          isFree ? "Coupon (Free)" : paymentMethod ?? "Not selected"
-        }\nDelegates: ${formData.delegates || "N/A"}\nPosition/Title: ${
+        }\nPayment Method: ${paymentMethodLabel}\nDelegates: ${
+          formData.delegates || "N/A"
+        }\nPosition/Title: ${
           formData.position.trim() || "N/A"
         }${studentDetails}${couponDetails}\nSpecial Requests: ${
           formData.specialRequests.trim() || "None"
@@ -1220,6 +1271,7 @@ function RegisterContent() {
   };
 
   // Free registration — no payment step, just confirm and send.
+  // Covers both the Free Pass package and the coupon-on-Single flow.
   const handleFreeSubmit = async () => {
     if (isSubmitting) return;
     setPaymentError(null);
@@ -1357,7 +1409,7 @@ function RegisterContent() {
         </div>
       </section>
 
-      <div className="max-w-5xl mx-auto px-6 pb-24">
+      <div className="max-w-7xl mx-auto px-6 pb-24">
         {submitted ? (
           <div className="bg-[#eaf3de] border border-[#3B6D11]/30 rounded-xl p-12 text-center">
             <CheckCircle className="w-16 h-16 text-[#3B6D11] mx-auto mb-4" />
@@ -1377,8 +1429,21 @@ function RegisterContent() {
                   Free Registration
                 </p>
                 <p className="text-sm text-[#4a5a4a]">
-                  Your registration was completed at no cost using the coupon{" "}
-                  <strong className="text-[#1a2b1a]">{appliedCoupon}</strong>.
+                  {isFreeTier ? (
+                    <>
+                      Your registration was completed at no cost with the{" "}
+                      <strong className="text-[#1a2b1a]">Free Pass</strong>.
+                    </>
+                  ) : (
+                    <>
+                      Your registration was completed at no cost using the
+                      coupon{" "}
+                      <strong className="text-[#1a2b1a]">
+                        {appliedCoupon}
+                      </strong>
+                      .
+                    </>
+                  )}
                 </p>
               </div>
             )}
@@ -1430,7 +1495,7 @@ function RegisterContent() {
             {/* ───────── Step 1: Select Package ───────── */}
             {step === 1 && (
               <div className="space-y-6">
-                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
                   {registrationPackages.map((pkg) => (
                     <button
                       type="button"
@@ -1462,6 +1527,11 @@ function RegisterContent() {
                             {pkg.isStudent && (
                               <span className="inline-block text-[10px] font-bold bg-[#1a70c8] text-white px-2 py-0.5 rounded-md">
                                 Student Rate
+                              </span>
+                            )}
+                            {pkg.isFree && (
+                              <span className="inline-block text-[10px] font-bold bg-[#e05c10] text-white px-2 py-0.5 rounded-md">
+                                100% Free
                               </span>
                             )}
                           </div>
@@ -1506,6 +1576,18 @@ function RegisterContent() {
                   </div>
                 )}
 
+                {isFreeTier && (
+                  <div className="flex items-start gap-3 bg-[#eaf3de] border border-[#3B6D11]/30 rounded-xl p-4">
+                    <PartyPopper className="w-5 h-5 text-[#3B6D11] shrink-0 mt-0.5" />
+                    <p className="text-sm text-[#4a5a4a]">
+                      The Free Pass gives you{" "}
+                      <strong className="text-[#1a2b1a]">no-cost access</strong>{" "}
+                      to the summit — no payment required. You&apos;ll confirm
+                      your details on the next step and you&apos;re all set.
+                    </p>
+                  </div>
+                )}
+
                 <div className="flex justify-end pt-4">
                   <button
                     type="button"
@@ -1535,101 +1617,103 @@ function RegisterContent() {
                     onChange={() => goToStep(1, selectedPackage)}
                   />
 
-                  {/* ── Coupon code ── */}
-                  <div className="mb-6">
-                    {isFree ? (
-                      <div className="flex items-center justify-between gap-3 rounded-lg border border-[#3B6D11]/30 bg-[#eaf3de] px-4 py-3">
-                        <p className="text-sm text-[#1a2b1a] flex items-center gap-2">
-                          <Ticket className="w-4 h-4 text-[#3B6D11] shrink-0" />
-                          Coupon <strong>{appliedCoupon}</strong>.
-                        </p>
-                        <button
-                          type="button"
-                          onClick={handleRemoveCoupon}
-                          className="text-xs font-semibold text-[#3B6D11] hover:underline shrink-0"
-                        >
-                          Remove
-                        </button>
-                      </div>
-                    ) : showCouponField ? (
-                      <div className="rounded-lg border border-[#d4d8d0] bg-[#f7f6f2] p-4">
-                        <label
-                          htmlFor="couponCode"
-                          className="block text-sm font-medium text-[#1a2b1a] mb-2"
-                        >
-                          Coupon Code
-                        </label>
-                        <div className="flex flex-col sm:flex-row gap-2">
-                          <input
-                            id="couponCode"
-                            type="text"
-                            value={couponInput}
-                            onChange={(e) => {
-                              setCouponInput(e.target.value);
-                              if (couponStatus === "invalid") {
-                                setCouponStatus("idle");
-                                setCouponError(null);
-                              }
-                            }}
-                            onKeyDown={(e) => {
-                              if (e.key === "Enter") {
-                                e.preventDefault();
-                                handleApplyCoupon();
-                              }
-                            }}
-                            placeholder="e.g. GAMMATFREE"
-                            autoCapitalize="characters"
-                            aria-invalid={couponStatus === "invalid"}
-                            aria-describedby={
-                              couponError ? "coupon-error" : undefined
-                            }
-                            className={inputClass(couponStatus === "invalid")}
-                          />
+                  {/* ── Coupon code (not shown on the Free Pass) ── */}
+                  {!isFreeTier && (
+                    <div className="mb-6">
+                      {isFree ? (
+                        <div className="flex items-center justify-between gap-3 rounded-lg border border-[#3B6D11]/30 bg-[#eaf3de] px-4 py-3">
+                          <p className="text-sm text-[#1a2b1a] flex items-center gap-2">
+                            <Ticket className="w-4 h-4 text-[#3B6D11] shrink-0" />
+                            Coupon <strong>{appliedCoupon}</strong>.
+                          </p>
                           <button
                             type="button"
-                            onClick={handleApplyCoupon}
-                            disabled={couponStatus === "checking"}
-                            className="inline-flex items-center justify-center px-5 py-2.5 bg-[#2d6e2e] border border-[#3d9e3e] rounded-md text-sm font-bold text-white hover:bg-[#3a8a3b] transition-colors disabled:opacity-50 shrink-0"
+                            onClick={handleRemoveCoupon}
+                            className="text-xs font-semibold text-[#3B6D11] hover:underline shrink-0"
                           >
-                            {couponStatus === "checking"
-                              ? "Checking..."
-                              : "Apply"}
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setShowCouponField(false);
-                              setCouponInput("");
-                              setCouponStatus("idle");
-                              setCouponError(null);
-                            }}
-                            className="inline-flex items-center justify-center px-4 py-2.5 text-sm font-semibold text-[#4a5a4a] hover:text-[#1a2b1a]"
-                          >
-                            Cancel
+                            Remove
                           </button>
                         </div>
-                        {couponError && (
-                          <p
-                            id="coupon-error"
-                            role="alert"
-                            className="flex items-center gap-1.5 text-xs text-red-600 mt-2"
+                      ) : showCouponField ? (
+                        <div className="rounded-lg border border-[#d4d8d0] bg-[#f7f6f2] p-4">
+                          <label
+                            htmlFor="couponCode"
+                            className="block text-sm font-medium text-[#1a2b1a] mb-2"
                           >
-                            <AlertCircle className="w-3.5 h-3.5 shrink-0" />
-                            {couponError}
-                          </p>
-                        )}
-                      </div>
-                    ) : (
-                      <button
-                        type="button"
-                        onClick={() => setShowCouponField(true)}
-                        className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#3B6D11] hover:underline"
-                      >
-                        <Ticket className="w-3.5 h-3.5" />
-                        Have a coupon code?
-                      </button>
-                    )}
-                  </div>
+                            Coupon Code
+                          </label>
+                          <div className="flex flex-col sm:flex-row gap-2">
+                            <input
+                              id="couponCode"
+                              type="text"
+                              value={couponInput}
+                              onChange={(e) => {
+                                setCouponInput(e.target.value);
+                                if (couponStatus === "invalid") {
+                                  setCouponStatus("idle");
+                                  setCouponError(null);
+                                }
+                              }}
+                              onKeyDown={(e) => {
+                                if (e.key === "Enter") {
+                                  e.preventDefault();
+                                  handleApplyCoupon();
+                                }
+                              }}
+                              placeholder="e.g. GAMMATFREE"
+                              autoCapitalize="characters"
+                              aria-invalid={couponStatus === "invalid"}
+                              aria-describedby={
+                                couponError ? "coupon-error" : undefined
+                              }
+                              className={inputClass(couponStatus === "invalid")}
+                            />
+                            <button
+                              type="button"
+                              onClick={handleApplyCoupon}
+                              disabled={couponStatus === "checking"}
+                              className="inline-flex items-center justify-center px-5 py-2.5 bg-[#2d6e2e] border border-[#3d9e3e] rounded-md text-sm font-bold text-white hover:bg-[#3a8a3b] transition-colors disabled:opacity-50 shrink-0"
+                            >
+                              {couponStatus === "checking"
+                                ? "Checking..."
+                                : "Apply"}
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setShowCouponField(false);
+                                setCouponInput("");
+                                setCouponStatus("idle");
+                                setCouponError(null);
+                              }}
+                              className="inline-flex items-center justify-center px-4 py-2.5 text-sm font-semibold text-[#4a5a4a] hover:text-[#1a2b1a]"
+                            >
+                              Cancel
+                            </button>
+                          </div>
+                          {couponError && (
+                            <p
+                              id="coupon-error"
+                              role="alert"
+                              className="flex items-center gap-1.5 text-xs text-red-600 mt-2"
+                            >
+                              <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+                              {couponError}
+                            </p>
+                          )}
+                        </div>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() => setShowCouponField(true)}
+                          className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#3B6D11] hover:underline"
+                        >
+                          <Ticket className="w-3.5 h-3.5" />
+                          Have a coupon code?
+                        </button>
+                      )}
+                    </div>
+                  )}
 
                   <h2
                     className="text-xl font-black text-[#1a2b1a] mb-1"
@@ -1734,7 +1818,8 @@ function RegisterContent() {
                         <TextField
                           name="organization"
                           label="Organization"
-                          required
+                          required={!isFreeTier}
+                          optional={isFreeTier}
                           value={formData.organization}
                           onChange={handleChange}
                           onBlur={handleBlur}
@@ -1863,9 +1948,19 @@ function RegisterContent() {
                       <div className="flex items-start gap-3 bg-[#eaf3de] rounded-lg p-4">
                         <PartyPopper className="w-5 h-5 text-[#3B6D11] shrink-0 mt-0.5" />
                         <p className="text-sm text-[#1a2b1a]">
-                          Coupon <strong>{appliedCoupon}</strong> makes this
-                          registration free. No payment is required — just
-                          confirm your details and submit.
+                          {isFreeTier ? (
+                            <>
+                              You selected the <strong>Free Pass</strong>. No
+                              payment is required — just confirm your details
+                              and submit.
+                            </>
+                          ) : (
+                            <>
+                              Coupon <strong>{appliedCoupon}</strong> makes this
+                              registration free. No payment is required — just
+                              confirm your details and submit.
+                            </>
+                          )}
                         </p>
                       </div>
 
@@ -2133,7 +2228,8 @@ function RegisterContent() {
                                 Use the subject line:{" "}
                                 <strong>
                                   &quot;GAMMAT 2026 Payment -{" "}
-                                  {formData.fullName}&quot;
+                                  {formData.fullName}
+                                  &quot;
                                 </strong>
                               </li>
                               <li>
