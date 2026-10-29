@@ -140,7 +140,7 @@ export default function Events() {
         <FadeUp delay={4}>
           <div className="mt-10 flex flex-wrap items-center justify-center gap-6  bg-white rounded-lg px-6 py-4">
             {[
-              { Icon: Calendar, text: "5th - 7th November 2026" },
+              { Icon: Calendar, text: "5th November 2026" },
               { Icon: Users, text: "Limited Seats Available" },
               { Icon: Target, text: "High-Impact Sessions" },
             ].map(({ Icon, text }, i) => (
