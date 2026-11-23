@@ -95,7 +95,7 @@ export default function Hero() {
               isVideoLoaded ? "opacity-100" : "opacity-0"
             }`}
           >
-            <source src="/vid/gammat-highlights.mp4" type="video/mp4" />
+            <source src="/vid/highlights.mp4" type="video/mp4" />
           </video>
 
           <div
