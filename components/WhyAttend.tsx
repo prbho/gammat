@@ -17,7 +17,7 @@ const reasons = [
     num: "01",
     icon: UserRoundKey,
     title: "Ministers & Regulators",
-    desc: "Direct access to Africa's transport policy architects — shape regulations, build relationships, influence the agenda.",
+    desc: "Direct access to Africa's transport policy architects: shape regulations, build relationships, influence the agenda.",
     accent: "#e05c10",
     longDesc:
       "Engage directly with the decision-makers shaping Africa's transport future.",
@@ -69,18 +69,13 @@ const reasons = [
 
 export default function WhyAttend() {
   return (
-    <section id="why" className="py-24 px-6 bg-[#0d1a0f]">
-      <div className="max-w-5xl mx-auto">
+    <section id="why" className="bg-[#061330] px-6 py-24">
+      <div className="mx-auto max-w-5xl">
         {/* Header */}
         <FadeUp>
-          <div className="text-center mb-16">
-            <div className="flex items-center justify-center gap-3 mb-2">
-              <span className="text-xs sm:text-sm font-semibold tracking-[0.12em] uppercase text-white/45 mb-3">
-                Why Attend
-              </span>
-            </div>
+          <div className="mb-16 text-center">
             <h2
-              className="text-5xl sm:text-6xl lg:text-7xl leading-none font-black text-white mb-6"
+              className="mb-6 text-5xl font-normal leading-none text-white sm:text-6xl lg:text-7xl"
               style={{ fontFamily: "'Bebas Neue', sans-serif" }}
             >
               The GAMMAT{" "}
@@ -96,81 +91,107 @@ export default function WhyAttend() {
                 Advantage
               </span>
             </h2>
-            <p className="text-white/50 text-lg max-w-2xl mx-auto leading-relaxed">
+            <p className="mx-auto max-w-2xl text-lg leading-relaxed text-white/65">
               Six compelling reasons why industry leaders choose GAMMAT as their
               platform for growth, partnership, and impact.
             </p>
           </div>
         </FadeUp>
 
-        {/* All 6 Cards - Large Format */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
+        {/* Cards */}
+        <div className="mb-16 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {reasons.map((reason, idx) => (
             <FadeUp
               key={reason.num}
               delay={((idx % 3) + 2) as 0 | 1 | 2 | 3 | 4 | 5}
             >
-              <div
-                className="group relative rounded-2xl overflow-hidden transition-all duration-500 hover:scale-[1.02] hover:shadow-xl min-h-90"
+              <article
+                className="group relative flex h-full flex-col overflow-hidden rounded-2xl transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_24px_60px_-24px_rgba(0,0,0,0.85)] motion-reduce:transition-none motion-reduce:hover:translate-y-0"
                 style={{
-                  background: `linear-gradient(135deg, ${reason.accent}12 0%, ${reason.accent}04 100%)`,
-                  backgroundColor: "#0d1a0f",
-                  border: `1px solid ${reason.accent}25`,
+                  backgroundColor: "#08183a",
+                  border: `1px solid ${reason.accent}33`,
                 }}
               >
-                {/* Accent bottom border - animates on hover */}
+                {/* Visual panel (its own div, not a background) */}
                 <div
-                  className="absolute bottom-0 left-0 right-0 h-1 transition-all duration-300 group-hover:h-1.5"
-                  style={{ background: reason.accent }}
-                />
+                  className="relative flex h-32 shrink-0 items-end justify-between overflow-hidden p-5"
+                  style={{
+                    background: `linear-gradient(135deg, ${reason.accent}48 0%, ${reason.accent}12 55%, transparent 100%)`,
+                  }}
+                >
+                  {/* Dot texture, masked to fade out */}
+                  <div
+                    className="pointer-events-none absolute inset-0"
+                    style={{
+                      backgroundImage: `radial-gradient(${reason.accent}66 1px, transparent 1px)`,
+                      backgroundSize: "13px 13px",
+                      WebkitMaskImage:
+                        "linear-gradient(120deg, #000 10%, transparent 72%)",
+                      maskImage:
+                        "linear-gradient(120deg, #000 10%, transparent 72%)",
+                    }}
+                  />
 
-                <div className="p-7">
-                  {/* Icon and Number Row */}
-                  <div className="flex items-start justify-between mb-5">
-                    <div
-                      className="w-14 h-14 rounded-xl flex items-center justify-center transition-all duration-300 group-hover:scale-110"
-                      style={{
-                        background: `${reason.accent}20`,
-                        border: `1px solid ${reason.accent}40`,
-                      }}
-                    >
-                      <reason.icon
-                        className="w-7 h-7"
-                        style={{ color: reason.accent }}
-                      />
-                    </div>
-                    <span
-                      className="text-5xl font-black opacity-20 transition-all duration-300 group-hover:opacity-40"
-                      style={{
-                        fontFamily: "'Bebas Neue', sans-serif",
-                        color: reason.accent,
-                      }}
-                    >
-                      {reason.num}
-                    </span>
+                  {/* Soft accent glow */}
+                  <div
+                    className="pointer-events-none absolute -left-10 -top-12 h-32 w-32 rounded-full blur-2xl"
+                    style={{ background: `${reason.accent}30` }}
+                  />
+
+                  {/* Icon tile */}
+                  <div
+                    className="relative flex h-12 w-12 items-center justify-center rounded-xl backdrop-blur-sm transition-transform duration-500 group-hover:scale-110 motion-reduce:transition-none motion-reduce:group-hover:scale-100"
+                    style={{
+                      background: "rgba(8, 24, 58, 0.65)",
+                      border: `1px solid ${reason.accent}80`,
+                      boxShadow: `0 0 0 4px ${reason.accent}14`,
+                    }}
+                  >
+                    <reason.icon
+                      className="h-6 w-6"
+                      style={{ color: reason.accent }}
+                    />
                   </div>
 
-                  {/* Title */}
-                  <h3
-                    className="text-lg md:text-xl font-black text-white mb-3"
-                    // style={{ fontFamily: "'Bebas Neue', sans-serif" }}
+                  {/* Ghost number */}
+                  <span
+                    className="relative text-5xl font-normal leading-none opacity-30 transition-opacity duration-500 group-hover:opacity-60"
+                    style={{
+                      fontFamily: "'Bebas Neue', sans-serif",
+                      color: reason.accent,
+                    }}
+                    aria-hidden="true"
                   >
+                    {reason.num}
+                  </span>
+                </div>
+
+                {/* Content */}
+                <div className="flex grow flex-col p-6">
+                  <h3 className="mb-3 text-lg font-black text-white md:text-xl">
                     {reason.title}
                   </h3>
 
-                  {/* Description */}
-                  <p className="text-white/60 text-sm md:text-base leading-relaxed mb-4">
+                  <p className="mb-5 text-sm leading-relaxed text-white/70 md:text-base">
                     {reason.desc}
                   </p>
 
-                  {/* Long description / tagline on hover */}
-                  <div className="pt-3 border-t border-white/10 opacity-0 group-hover:opacity-100 transition-all duration-300">
-                    <p className="text-xs text-white/40 italic">
-                      {reason.longDesc}
-                    </p>
+                  {/* Tagline */}
+                  <div className="mt-auto flex items-start gap-2.5 border-t border-white/10 pt-4">
+                    <span
+                      className="mt-[7px] h-1.5 w-1.5 shrink-0 rounded-full"
+                      style={{ background: reason.accent }}
+                    />
+                    <p className="text-sm text-white/55">{reason.longDesc}</p>
                   </div>
                 </div>
-              </div>
+
+                {/* Accent bottom rule */}
+                <div
+                  className="h-0.5 w-full transition-all duration-300 group-hover:h-1"
+                  style={{ background: reason.accent }}
+                />
+              </article>
             </FadeUp>
           ))}
         </div>
@@ -180,10 +201,10 @@ export default function WhyAttend() {
           <FadeUp delay={5}>
             <Link
               href="/register"
-              className="group inline-flex items-center gap-2 px-10 py-4 bg-[#2d6e2e] border border-[#3d9e3e] rounded-md text-base font-bold tracking-wider uppercase text-white transition-all duration-300 hover:bg-[#3a8a3b] hover:scale-105 hover:shadow-xl"
+              className="group inline-flex items-center gap-2 rounded-sm border border-white/60 hover:border-white px-6 py-3 text-sm font-semibold text-white/90 transition-colors duration-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-300"
             >
-              Claim Your Advantage
-              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              Join us in 2027
+              <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
             </Link>
           </FadeUp>
         </div>

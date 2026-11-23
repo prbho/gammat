@@ -2,7 +2,16 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { AlertCircle, Check, Mail, MapPin, Phone } from "lucide-react";
+import Link from "next/link";
+import {
+  AlertCircle,
+  ArrowRight,
+  Check,
+  Images,
+  Mail,
+  MapPin,
+  Phone,
+} from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -10,6 +19,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/Select";
+
+/* ─────────────────────────────────────────────────────────────
+   Participation availability
+   Flip to `false` when 2027 participation opens.
+───────────────────────────────────────────────────────────── */
+const PARTICIPATION_CLOSED = true;
 
 /* ─────────────────────────────────────────────────────────────
    Data
@@ -138,7 +153,6 @@ const EMPTY_FORM: FormState = {
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 const looksLikeUrl = (v: string) => !/\s/.test(v) && /\.[a-z]{2,}/i.test(v);
 
-// Fields (in on-screen order) that belong to each step
 const STEP_FIELDS: FieldName[][] = [
   [
     "awardeeName",
@@ -191,8 +205,7 @@ const validate = (d: FormState): FormErrors => {
 };
 
 /* ─────────────────────────────────────────────────────────────
-   Small components (kept outside the page so inputs never
-   remount and lose focus while typing)
+   Small components
 ───────────────────────────────────────────────────────────── */
 
 const inputClass = (hasError: boolean) =>
@@ -429,10 +442,12 @@ function Row({ label, value }: { label: string; value?: string }) {
 }
 
 /* ─────────────────────────────────────────────────────────────
-   Page
+   Page — guards against closed participation
 ───────────────────────────────────────────────────────────── */
 
 export default function ParticipationPage() {
+  if (PARTICIPATION_CLOSED) return <ParticipationClosed />;
+
   return (
     <div className="min-h-screen bg-[#f7f6f2] pt-32">
       <section className="px-4 sm:px-6 lg:px-8 mb-16">
@@ -506,11 +521,96 @@ export default function ParticipationPage() {
   );
 }
 
+function ParticipationClosed() {
+  return (
+    <div className="min-h-screen bg-[#f7f6f2] pt-32 pb-24">
+      <div className="max-w-3xl mx-auto px-6">
+        {/* Header */}
+        <div className="text-center mb-10">
+          <div className="flex items-center justify-center gap-3 mb-6">
+            <span className="w-6 h-0.5 bg-[#4a5a4a]/30" />
+            <span className="text-[11px] font-bold tracking-[0.14em] uppercase text-[#4a5a4a]/70">
+              Participation Closed
+            </span>
+            <span className="w-6 h-0.5 bg-[#4a5a4a]/30" />
+          </div>
+
+          <h1
+            className="text-4xl sm:text-5xl lg:text-6xl leading-none font-black text-[#1a2b1a] mb-6"
+            style={{ fontFamily: "'Bebas Neue', sans-serif" }}
+          >
+            GAMMAT 2026 Has <span className="text-[#4a5a4a]/55">Concluded</span>
+          </h1>
+
+          <p className="text-[#4a5a4a] text-lg leading-relaxed max-w-2xl mx-auto mb-3">
+            Thank you to every awardee, organization, and partner who took part
+            in GAMMAT 2026 in Lagos.
+          </p>
+          <p className="text-[#4a5a4a] max-w-2xl mx-auto">
+            Participation and awardee submissions for GAMMAT 2027 will open
+            soon. In the meantime, revisit the moments that made this year
+            unforgettable.
+          </p>
+        </div>
+
+        {/* Card */}
+        <div className="bg-white border border-[#d4d8d0] rounded-xl p-8 text-center">
+          {/* Grayed-out participation button */}
+          <div
+            aria-disabled="true"
+            className="inline-flex items-center gap-2 px-8 py-3 rounded-md bg-[#e3e5e0] text-[#4a5a4a]/55 text-sm font-bold tracking-wider uppercase cursor-not-allowed select-none mb-5 border border-[#d4d8d0]"
+          >
+            <AlertCircle className="w-4 h-4" />
+            Participation Closed
+          </div>
+
+          <p className="text-sm text-[#4a5a4a] mb-6 max-w-md mx-auto">
+            The 2026 participation window has ended. Watch this page for the
+            2027 announcement.
+          </p>
+
+          <div className="flex flex-wrap justify-center gap-3">
+            <Link
+              href="/gallery"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-[#04102a] border border-[#04102a] rounded-md text-sm font-bold tracking-wider uppercase text-white hover:bg-[#0f1c3a] transition-colors"
+            >
+              <Images className="w-4 h-4" />
+              View the Gallery
+            </Link>
+            <Link
+              href="/interest"
+              className="inline-flex items-center gap-2 px-6 py-3 uppercase border border-[#0f1c3a] rounded-md text-sm font-semibold text-[#1a2b1a] hover:border-[#3B6D11] hover:bg-[#eaf3de] transition-colors"
+            >
+              Register 2027 Interest
+              <ArrowRight className="w-4 h-4" />
+            </Link>
+          </div>
+        </div>
+
+        {/* Contact */}
+        <p className="text-center text-xs text-[#4a5a4a]/70 mt-6">
+          Questions? Email{" "}
+          <a
+            href="mailto:info@aspirewestafrica.com"
+            className="font-semibold text-[#04102a] hover:underline"
+          >
+            info@aspirewestafrica.com
+          </a>
+        </p>
+      </div>
+    </div>
+  );
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Stepper — only mounted when participation is open
+───────────────────────────────────────────────────────────── */
+
 function ParticipationStepper() {
   const [currentStep, setCurrentStep] = useState(0);
   const [formData, setFormData] = useState<FormState>(EMPTY_FORM);
   const [touched, setTouched] = useState<Partial<Record<FieldName, boolean>>>(
-    {}
+    {},
   );
   const [attempted, setAttempted] = useState(false);
   const [hydrated, setHydrated] = useState(false);
@@ -526,19 +626,12 @@ function ParticipationStepper() {
   const isLast = currentStep === STEPS.length - 1;
 
   const selectedPackage = tablePackages.find(
-    (p) => p.label === formData.packageChoice
+    (p) => p.label === formData.packageChoice,
   );
 
-  // Show an error only after the field has been left, or after a
-  // failed attempt to continue.
   const errorFor = (name: FieldName) =>
     touched[name] || attempted ? errors[name] : undefined;
 
-  /* ── Remember progress across refreshes ──
-     One-time hydration from sessionStorage. sessionStorage has no
-     subscription API, so the "subscribe and setState in a callback"
-     pattern this rule expects doesn't apply. Reading it once on
-     mount is the correct pattern for restoring a saved draft. */
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setFormData((prev) => {
@@ -561,7 +654,6 @@ function ParticipationStepper() {
     }
   }, [formData, hydrated, submitted]);
 
-  /* ── Scroll to the top of the card on every step change ── */
   useEffect(() => {
     if (firstRender.current) {
       firstRender.current = false;
@@ -603,12 +695,11 @@ function ParticipationStepper() {
     setLoading(true);
     setSubmitError("");
 
-    // Trim text fields before sending
     const payload = Object.fromEntries(
       Object.entries(formData).map(([k, v]) => [
         k,
         typeof v === "string" ? v.trim() : v,
-      ])
+      ]),
     );
 
     try {
@@ -621,7 +712,7 @@ function ParticipationStepper() {
 
       if (!response.ok || !result.success) {
         throw new Error(
-          result.error || "Unable to send participation request."
+          result.error || "Unable to send participation request.",
         );
       }
 
@@ -635,7 +726,7 @@ function ParticipationStepper() {
     } catch (error) {
       console.error(error);
       setSubmitError(
-        "We couldn't send your request. Check your connection and try again, or email info@aspirewestafrica.com."
+        "We couldn't send your request. Check your connection and try again, or email info@aspirewestafrica.com.",
       );
     } finally {
       setLoading(false);
@@ -648,7 +739,6 @@ function ParticipationStepper() {
 
     if (stepErrors.length > 0) {
       setAttempted(true);
-      // wait a tick so the error messages render before focusing
       setTimeout(focusFirstInvalid, 0);
       return;
     }
@@ -658,9 +748,8 @@ function ParticipationStepper() {
       return;
     }
 
-    // Final safety check across every step
     const firstBadStep = STEP_FIELDS.findIndex((fields) =>
-      fields.some((f) => errors[f])
+      fields.some((f) => errors[f]),
     );
     if (firstBadStep !== -1) {
       setAttempted(true);
@@ -701,7 +790,6 @@ function ParticipationStepper() {
     formData.collateral && "Branded collateral",
   ].filter(Boolean) as string[];
 
-  /* ── Success ── */
   if (submitted) {
     return (
       <div className="rounded-xl border border-[#3B6D11]/30 bg-[#eaf3de] p-10 text-center">
@@ -718,7 +806,7 @@ function ParticipationStepper() {
         <button
           type="button"
           onClick={handleReset}
-          className="inline-flex items-center gap-2 px-6 py-2.5 bg-[#2d6e2e] border border-[#3d9e3e] rounded-md text-sm font-bold tracking-wider uppercase text-white hover:bg-[#3a8a3b] transition-colors"
+          className="inline-flex items-center gap-2 px-6 py-2.5 bg-[#04102a] border border-[#04102a] rounded-md text-sm font-bold tracking-wider uppercase text-white hover:bg-[#0f1c3a] transition-colors"
         >
           Submit another request
         </button>
@@ -1180,15 +1268,15 @@ function ParticipationStepper() {
           <button
             type="submit"
             disabled={loading}
-            className="inline-flex items-center justify-center gap-2 px-8 py-3 bg-[#2d6e2e] border border-[#3d9e3e] rounded-md text-sm font-bold tracking-wider uppercase text-white hover:bg-[#3a8a3b] transition-colors disabled:cursor-not-allowed disabled:opacity-50"
+            className="inline-flex items-center justify-center gap-2 px-8 py-3 bg-[#04102a] border border-[#04102a] rounded-md text-sm font-bold tracking-wider uppercase text-white hover:bg-[#0f1c3a] transition-colors disabled:cursor-not-allowed disabled:opacity-50"
           >
             {loading
               ? "Sending request..."
               : isLast
-              ? "Submit request"
-              : currentStep === 2
-              ? "Review"
-              : "Continue"}
+                ? "Submit request"
+                : currentStep === 2
+                  ? "Review"
+                  : "Continue"}
           </button>
         </div>
       </form>

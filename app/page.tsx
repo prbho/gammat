@@ -1,11 +1,12 @@
-import Hero from "@/components/Hero";
 import About from "@/components/About";
-import Events from "@/components/Events";
 import Ecosystem from "@/components/Ecosystem";
 import WhyAttend from "@/components/WhyAttend";
 import Dignitaries from "@/components/Dignitaries";
 import GetInvolved from "@/components/GetInvolved";
-import Partners from "@/components/Partners";
+import Hero from "@/components/recap/hero";
+import Events from "@/components/recap/events";
+import Partners from "@/components/recap/Partners";
+import GalleryStrip from "@/components/gallery/GalleryStrip";
 
 export default function Home() {
   return (
@@ -13,6 +14,7 @@ export default function Home() {
       <Hero />
       <About />
       <Events />
+      <GalleryStrip />
       <Partners />
       <Ecosystem />
       <WhyAttend />

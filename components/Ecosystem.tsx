@@ -10,6 +10,8 @@ import {
   Microchip,
   ArrowRight,
 } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
 import FadeUp from "./FadeUp";
 
 const sectors = [
@@ -19,7 +21,7 @@ const sectors = [
     title: "Aviation & Aerospace",
     desc: "Air connectivity, fleet expansion, airport infrastructure, and aviation technology shaping the future of African skies.",
     accentColor: "#e05c10",
-    bgImage: "/aviation.png",
+    bgImage: "/gallery/faan.webp",
   },
   {
     icon: Ship,
@@ -27,7 +29,7 @@ const sectors = [
     title: "Maritime & Blue Economy",
     desc: "Port modernization, shipping corridors, blue economy, and maritime safety driving Africa's coastal trade.",
     accentColor: "#1a70c8",
-    bgImage: "/maritime.png",
+    bgImage: "/gallery/slabfreight.webp",
   },
   {
     icon: Truck,
@@ -35,7 +37,7 @@ const sectors = [
     title: "Logistics & Mobility",
     desc: "Supply chain optimization, last-mile delivery, urban mobility, and freight connecting African markets.",
     accentColor: "#3db340",
-    bgImage: "/logistics.png",
+    bgImage: "/gallery/gigm.webp",
   },
   {
     icon: Building2,
@@ -51,7 +53,7 @@ const sectors = [
     title: "Trade & Investment",
     desc: "AfCFTA implementation, capital deployment, PPP models, and trade finance accelerating Africa's growth.",
     accentColor: "#6e28d9",
-    bgImage: "/trade.png",
+    bgImage: "/gallery/regaldpc.webp",
   },
   {
     icon: Microchip,
@@ -59,26 +61,19 @@ const sectors = [
     title: "Technology & Digital Innovation",
     desc: "Smart mobility, digital logistics, AI optimization, and transport tech innovations transforming the industry.",
     accentColor: "#c4267a",
-    bgImage: "/technology.png",
+    bgImage: "/gallery/netsafe.webp",
   },
 ];
 
 export default function Ecosystem() {
   return (
-    <section id="ecosystem" className="py-24 px-6 bg-[#f7f6f2]">
-      <div className="max-w-5xl mx-auto">
+    <section id="ecosystem" className="bg-[#f2f6fc] px-6 py-24">
+      <div className="mx-auto max-w-5xl">
         {/* Header */}
         <FadeUp>
-          <div className="text-center mb-12">
-            <div className="flex items-center justify-center gap-3 mb-6">
-              <span className="w-6 h-0.5 bg-[#3B6D11]" />
-              <span className="text-[11px] font-bold tracking-[0.14em] uppercase text-[#3B6D11]">
-                Integrated Ecosystem
-              </span>
-              <span className="w-6 h-0.5 bg-[#3B6D11]" />
-            </div>
+          <div className="mb-12 text-center">
             <h2
-              className="text-4xl md:text-5xl lg:text-6xl font-black text-[#1a2b1a] mb-4"
+              className="mb-4 text-5xl font-normal text-[#061330] md:text-6xl lg:text-7xl"
               style={{ fontFamily: "'Bebas Neue', sans-serif" }}
             >
               Where{" "}
@@ -95,99 +90,87 @@ export default function Ecosystem() {
               </span>{" "}
               Converge
             </h2>
-            <p className="text-[#4a5a4a] text-base max-w-2xl mx-auto">
+            <p className="mx-auto max-w-2xl text-base leading-relaxed text-[#3d4b66]">
               Six interconnected sectors form the backbone of Africa&apos;s
-              transport future. GAMMAT 2026 brings decision-makers from each
+              transport future. GAMMAT 2026 brought decision-makers from each
               discipline together under one roof.
             </p>
           </div>
         </FadeUp>
 
-        {/* Sectors Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
+        {/* Sectors grid */}
+        <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
           {sectors.map((sector, idx) => (
             <FadeUp key={sector.title} delay={idx as 0 | 1 | 2 | 3 | 4 | 5}>
-              <div
-                className="group relative rounded-xl overflow-hidden h-full transition-transform duration-300 hover:scale-[1.02]"
-                style={{
-                  backgroundImage: `url(${sector.bgImage})`,
-                  backgroundSize: "cover",
-                  backgroundPosition: "center",
-                }}
-              >
-                {/* Dark overlay */}
-                <div className="absolute inset-0 bg-[#0d1a0f]/90" />
-
-                {/* Accent bottom border — uses each card's brand color */}
+              <article className="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-[#061330]/10 bg-white shadow-[0_1px_2px_rgba(6,19,48,0.06)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_18px_44px_-14px_rgba(6,19,48,0.28)] motion-reduce:transition-none motion-reduce:hover:translate-y-0">
+                {/* Accent top rule */}
                 <div
-                  className="absolute bottom-0 left-0 right-0 h-0.5"
+                  className="absolute inset-x-0 top-0 z-10 h-1"
                   style={{ background: sector.accentColor }}
                 />
 
-                {/* Content */}
-                <div className="relative p-7 h-full flex flex-col min-h-50">
-                  {/* Tag */}
+                {/* Image panel */}
+                <div className="relative aspect-[16/10] w-full overflow-hidden bg-[#061330]/5">
+                  <Image
+                    src={sector.bgImage}
+                    alt={sector.title}
+                    fill
+                    sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
+                    className="object-cover transition-transform duration-500 group-hover:scale-105 motion-reduce:transition-none motion-reduce:group-hover:scale-100"
+                  />
+
+                  {/* Scrim so the badge stays legible */}
+                  <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#061330]/55 via-transparent to-transparent" />
+
+                  {/* Tag badge */}
                   <span
-                    className="inline-flex items-center gap-2 text-[10px] font-bold tracking-[0.14em] uppercase mb-4"
-                    style={{
-                      color: sector.accentColor,
-                      fontFamily: "'Bebas Neue', sans-serif",
-                      fontSize: "16px",
-                    }}
+                    className="absolute bottom-3 left-4 inline-flex items-center gap-2 rounded-full px-3 py-1 text-[11px] font-bold uppercase tracking-[0.14em] text-white backdrop-blur-sm"
+                    style={{ background: `${sector.accentColor}dd` }}
                   >
-                    <span
-                      className="w-1.5 h-1.5 rounded-full"
-                      style={{ background: sector.accentColor }}
-                    />
+                    <span className="h-1.5 w-1.5 rounded-full bg-white/90" />
                     {sector.tag}
                   </span>
+                </div>
 
-                  {/* Icon + Title */}
-                  <div className="flex gap-3 mb-4 items-center">
+                {/* Content */}
+                <div className="flex grow flex-col p-6">
+                  <div className="mb-3 flex items-center gap-3">
                     <div
-                      className="w-9 h-9 rounded-md flex items-center justify-center shrink-0 mt-0.5"
+                      className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg"
                       style={{
-                        background: `${sector.accentColor}22`,
-                        border: `0.5px solid ${sector.accentColor}55`,
+                        background: `${sector.accentColor}14`,
+                        border: `1px solid ${sector.accentColor}33`,
                       }}
                     >
                       <sector.icon
-                        className="w-4 h-4"
+                        className="h-4 w-4"
                         style={{ color: sector.accentColor }}
                       />
                     </div>
-                    <h3
-                      className="font-black text-lg text-white leading-6 pt-1.5"
-                      // style={{
-                      //   fontFamily: "'Bebas Neue', sans-serif",
-                      //   fontSize: "28px",
-                      // }}
-                    >
+                    <h3 className="text-lg font-black leading-tight text-[#061330]">
                       {sector.title}
                     </h3>
                   </div>
 
-                  {/* Description */}
-                  <p className="text-white/55 text-sm leading-relaxed grow">
+                  <p className="grow text-sm leading-relaxed text-[#3d4b66]">
                     {sector.desc}
                   </p>
                 </div>
-              </div>
+              </article>
             </FadeUp>
           ))}
         </div>
 
-        {/* Info bar */}
         {/* CTA */}
         <div className="mt-12 text-center">
           <FadeUp delay={4}>
-            <a
+            <Link
               href="/register"
-              className="group inline-flex items-center gap-2 px-7 py-3 bg-[#0d1a0f] border border-[#3B6D11]/40 rounded-md text-sm font-bold tracking-wider uppercase text-white transition-colors hover:bg-[#3a8a3b]"
+              className="group inline-flex items-center gap-2 rounded-sm bg-[#061330] px-7 py-3 text-sm font-semibold text-white transition-colors hover:bg-[#0a1f4d] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1b5fc1]"
             >
-              Register Now
-              <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
-            </a>
+              Join us in 2027
+              <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
+            </Link>
           </FadeUp>
         </div>
       </div>

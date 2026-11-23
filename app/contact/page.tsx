@@ -285,7 +285,7 @@ function FieldShell({
 export default function ContactPage() {
   const [formData, setFormData] = useState<ContactForm>(EMPTY_FORM);
   const [touched, setTouched] = useState<Partial<Record<FieldName, boolean>>>(
-    {}
+    {},
   );
   const [attempted, setAttempted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -317,7 +317,7 @@ export default function ContactPage() {
   };
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     setField(e.target.name as FieldName, e.target.value);
   };
@@ -369,7 +369,7 @@ export default function ContactPage() {
     } catch (error) {
       console.error("Error sending contact message:", error);
       setErrorMessage(
-        "We couldn't send your message. Check your connection and try again, or email info@aspirewestafrica.com."
+        "We couldn't send your message. Check your connection and try again, or email info@aspirewestafrica.com.",
       );
     } finally {
       setIsSubmitting(false);
@@ -447,7 +447,7 @@ export default function ContactPage() {
                     >
                       {line.text}
                     </p>
-                  )
+                  ),
                 )}
               </div>
             ))}
@@ -647,7 +647,7 @@ export default function ContactPage() {
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="w-full inline-flex items-center justify-center gap-2 px-6 py-3 bg-[#2d6e2e] border border-[#3d9e3e] rounded-md text-sm font-bold tracking-wider uppercase text-white hover:bg-[#3a8a3b] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full inline-flex items-center justify-center gap-2 px-6 py-3 bg-[#04102a] border border-[#04102a] rounded-md text-sm font-bold tracking-wider uppercase text-white hover:bg-[#0f1c3a] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {isSubmitting ? "Sending..." : "Send Message"}
                     <Send className="w-3.5 h-3.5" />
@@ -701,7 +701,7 @@ export default function ContactPage() {
                 </p>
                 <a
                   href="tel:+2348066626462"
-                  className="inline-flex items-center gap-2 px-5 py-2 bg-[#2d6e2e] rounded-md text-sm font-bold text-white hover:bg-[#3a8a3b] transition-colors"
+                  className="inline-flex items-center gap-2 px-5 py-2 bg-[#04102a] rounded-md text-sm font-bold text-white hover:bg-[#0f1c3a] transition-colors"
                 >
                   <Phone className="w-3.5 h-3.5" />
                   +234 806 662 6462

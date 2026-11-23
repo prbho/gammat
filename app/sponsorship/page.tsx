@@ -8,6 +8,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/Select";
+import Link from "next/link";
 import type { LucideIcon } from "lucide-react";
 import {
   CheckCircle,
@@ -28,8 +29,16 @@ import {
   Mail,
   X,
   Send,
+  Images,
+  AlertCircle,
 } from "lucide-react";
 import { useState } from "react";
+
+/* ─────────────────────────────────────────────────────────────
+   Sponsorship availability
+   Flip to `false` when 2027 sponsorship packages open.
+───────────────────────────────────────────────────────────── */
+const SPONSORSHIP_CLOSED = true;
 
 interface SponsorshipPackage {
   icon: LucideIcon;
@@ -174,7 +183,100 @@ interface ModalFormData {
   hearAbout: string;
 }
 
+/* ─────────────────────────────────────────────────────────────
+   Page wrapper — guards against closed sponsorship
+───────────────────────────────────────────────────────────── */
+
 export default function SponsorshipPage() {
+  if (SPONSORSHIP_CLOSED) return <SponsorshipClosed />;
+  return <SponsorshipContent />;
+}
+
+function SponsorshipClosed() {
+  return (
+    <div className="min-h-screen bg-[#f7f6f2] pt-32 pb-24">
+      <div className="max-w-3xl mx-auto px-6">
+        {/* Header */}
+        <div className="text-center mb-10">
+          <div className="flex items-center justify-center gap-3 mb-6">
+            <span className="w-6 h-0.5 bg-[#4a5a4a]/30" />
+            <span className="text-[11px] font-bold tracking-[0.14em] uppercase text-[#4a5a4a]/70">
+              Sponsorship Closed
+            </span>
+            <span className="w-6 h-0.5 bg-[#4a5a4a]/30" />
+          </div>
+
+          <h1
+            className="text-4xl sm:text-5xl lg:text-6xl leading-none font-black text-[#1a2b1a] mb-6"
+            style={{ fontFamily: "'Bebas Neue', sans-serif" }}
+          >
+            GAMMAT 2026 Has <span className="text-[#4a5a4a]/55">Concluded</span>
+          </h1>
+
+          <p className="text-[#4a5a4a] text-lg leading-relaxed max-w-2xl mx-auto mb-3">
+            Thank you to every sponsor and partner who made GAMMAT 2026 possible
+            in Lagos.
+          </p>
+          <p className="text-[#4a5a4a] max-w-2xl mx-auto">
+            Sponsorship packages for GAMMAT 2027 will be announced soon. In the
+            meantime, revisit the moments that made this year unforgettable.
+          </p>
+        </div>
+
+        {/* Card */}
+        <div className="bg-white border border-[#d4d8d0] rounded-xl p-8 text-center">
+          {/* Grayed-out sponsorship button */}
+          <div
+            aria-disabled="true"
+            className="inline-flex items-center gap-2 px-8 py-3 rounded-md bg-[#e3e5e0] text-[#4a5a4a]/55 text-sm font-bold tracking-wider uppercase cursor-not-allowed select-none mb-5 border border-[#d4d8d0]"
+          >
+            <AlertCircle className="w-4 h-4" />
+            Sponsorship Closed
+          </div>
+
+          <p className="text-sm text-[#4a5a4a] mb-6 max-w-md mx-auto">
+            The 2026 sponsorship window has ended. Watch this page for the 2027
+            package announcement.
+          </p>
+
+          <div className="flex flex-wrap justify-center gap-3">
+            <Link
+              href="/gallery"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-[#04102a] border border-[#04102a] rounded-md text-sm font-bold tracking-wider uppercase text-white hover:bg-[#0f1c3a] transition-colors"
+            >
+              <Images className="w-4 h-4" />
+              View the Gallery
+            </Link>
+            <Link
+              href="/interest"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-white border border-[#0f1c3a] rounded-md text-sm font-semibold uppercase text-[#0f1c3a] hover:border-[#3B6D11] hover:bg-[#eaf3de] transition-colors"
+            >
+              Register 2027 Interest
+              <ArrowRight className="w-4 h-4" />
+            </Link>
+          </div>
+        </div>
+
+        {/* Contact */}
+        <p className="text-center text-xs text-[#4a5a4a]/70 mt-6">
+          For 2027 sponsorship enquiries, email{" "}
+          <a
+            href="mailto:info@aspirewestafrica.com"
+            className="font-semibold text-[#3B6D11] hover:underline"
+          >
+            info@aspirewestafrica.com
+          </a>
+        </p>
+      </div>
+    </div>
+  );
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Full sponsorship page — only mounted when sponsorship is open
+───────────────────────────────────────────────────────────── */
+
+function SponsorshipContent() {
   const [selectedPackage, setSelectedPackage] =
     useState<SponsorshipPackage | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -237,7 +339,7 @@ export default function SponsorshipPage() {
   const handleChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >
+    >,
   ) => {
     setFormData({
       ...formData,
@@ -269,7 +371,7 @@ export default function SponsorshipPage() {
 
       if (!response.ok || !result.success) {
         throw new Error(
-          result.error || "Unable to submit sponsorship inquiry."
+          result.error || "Unable to submit sponsorship inquiry.",
         );
       }
 
@@ -280,7 +382,7 @@ export default function SponsorshipPage() {
       console.error("Error submitting form:", error);
       setIsSubmitting(false);
       alert(
-        "There was an error submitting your inquiry. Please try again or email us directly."
+        "There was an error submitting your inquiry. Please try again or email us directly.",
       );
     }
   };
@@ -420,7 +522,7 @@ export default function SponsorshipPage() {
                 <button
                   className={`mt-6 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-md text-xs font-bold uppercase tracking-wider transition-all duration-300 ${
                     pkg.highlighted
-                      ? "bg-[#2d6e2e] border border-[#3d9e3e] text-white hover:bg-[#3a8a3b]"
+                      ? "bg-[#04102a] border border-[#04102a] text-white hover:bg-[#0f1c3a]"
                       : "bg-white border border-[#d4d8d0] text-[#1a2b1a] hover:border-[#3B6D11] hover:bg-[#eaf3de]"
                   }`}
                 >
@@ -759,7 +861,7 @@ export default function SponsorshipPage() {
                     <button
                       type="submit"
                       disabled={isSubmitting}
-                      className="inline-flex items-center gap-2 px-5 py-2 bg-[#2d6e2e] border border-[#3d9e3e] rounded-md text-sm font-bold uppercase text-white hover:bg-[#3a8a3b] transition-colors disabled:opacity-50"
+                      className="inline-flex items-center gap-2 px-5 py-2 bg-[#04102a] border border-[#04102a] rounded-md text-sm font-bold uppercase text-white hover:bg-[#0f1c3a] transition-colors disabled:opacity-50"
                     >
                       {isSubmitting ? "Sending..." : "Send Inquiry"}
                       <Send className="w-3.5 h-3.5" />
@@ -779,7 +881,7 @@ export default function SponsorshipPage() {
                   </p>
                   <button
                     onClick={closeModal}
-                    className="px-6 py-2 bg-[#2d6e2e] rounded-md text-sm font-bold text-white hover:bg-[#3a8a3b] transition-colors"
+                    className="px-6 py-2 bg-[#04102a] rounded-md text-sm font-bold text-white hover:bg-[#0f1c3a] transition-colors"
                   >
                     Close
                   </button>

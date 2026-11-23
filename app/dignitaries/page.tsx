@@ -291,7 +291,7 @@ export default function DignitariesPage() {
       {/* ── Categories & Dignitaries ── */}
       {categories.map((category) => {
         const categoryDignitaries = dignitaries.filter(
-          (d) => d.category === category.name
+          (d) => d.category === category.name,
         );
         if (categoryDignitaries.length === 0) return null;
 
@@ -431,7 +431,7 @@ export default function DignitariesPage() {
             <div className="flex flex-wrap justify-center gap-3">
               <Link
                 href="/register"
-                className="group inline-flex items-center gap-2 px-7 py-3 bg-[#2d6e2e] border border-[#3d9e3e] rounded-md text-sm font-bold tracking-wider uppercase text-white hover:bg-[#3a8a3b] transition-colors"
+                className="group inline-flex items-center gap-2 px-7 py-3 bg-[#04102a] border border-[#04102a] rounded-md text-sm font-bold tracking-wider uppercase text-white hover:bg-[#0f1c3a] transition-colors"
               >
                 Register Now
                 <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />

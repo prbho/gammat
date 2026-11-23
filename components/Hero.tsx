@@ -33,7 +33,7 @@ export default function Hero() {
           });
         }
       },
-      { threshold: 0.3 }
+      { threshold: 0.3 },
     );
 
     observer.observe(container);
@@ -150,7 +150,7 @@ export default function Hero() {
             <div className="flex flex-wrap gap-3 justify-center md:justify-start">
               <Link
                 href="/register"
-                className="group inline-flex items-center gap-2 px-6 py-3 bg-[#2d6e2e] border border-[#3d9e3e] rounded-md text-sm font-bold tracking-wider uppercase text-white transition-colors hover:bg-[#3a8a3b]"
+                className="group inline-flex items-center gap-2 px-6 py-3 bg-[#04102a] border border-[#04102a] rounded-md text-sm font-bold tracking-wider uppercase text-white transition-colors hover:bg-[#0f1c3a]"
               >
                 <Ticket className="w-4 h-4" />
                 Secure Your Pass

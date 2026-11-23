@@ -50,6 +50,29 @@ const GADS_IMAGES = [
   "https://www.gstatic.com",
 ];
 
+// YouTube embeds (highlight video modal)
+// Covers both youtube.com and youtube-nocookie.com variants.
+const YT_SCRIPTS = ["https://www.youtube.com", "https://s.ytimg.com"];
+const YT_CONNECT = [
+  "https://www.youtube.com",
+  "https://www.youtube-nocookie.com",
+  "https://youtubei.googleapis.com",
+  "https://www.google.com",
+  "https://jnn-pa.googleapis.com",
+];
+const YT_IMAGES = [
+  "https://i.ytimg.com",
+  "https://i9.ytimg.com",
+  "https://www.youtube.com",
+  "https://www.youtube-nocookie.com",
+  "https://www.gstatic.com",
+];
+const YT_FRAMES = [
+  "https://www.youtube.com",
+  "https://www.youtube-nocookie.com",
+  "https://youtube.com",
+];
+
 // Cloudflare Web Analytics / Insights
 const CF_SCRIPTS = ["https://static.cloudflareinsights.com"];
 const CF_CONNECT = ["https://cloudflareinsights.com"];
@@ -81,6 +104,7 @@ const ContentSecurityPolicy = [
     ...GADS_SCRIPTS,
     ...CF_SCRIPTS,
     ...PAYSTACK_SCRIPTS,
+    ...YT_SCRIPTS,
   ].join(" "),
 
   [
@@ -89,18 +113,20 @@ const ContentSecurityPolicy = [
     ...GADS_SCRIPTS,
     ...CF_SCRIPTS,
     ...PAYSTACK_SCRIPTS,
+    ...YT_SCRIPTS,
   ].join(" "),
 
   // Hardening
   "object-src 'none'",
   "base-uri 'self'",
 
-  // Frames: Paystack checkout modal only (+ GTM noscript iframe)
+  // Frames: Paystack checkout, GTM noscript, and YouTube embed
   [
     "frame-src 'self'",
     "https://www.googletagmanager.com",
     ...PAYSTACK_FRAMES,
     ...GADS_SCRIPTS,
+    ...YT_FRAMES,
   ].join(" "),
 
   "frame-ancestors 'none'",
@@ -112,6 +138,7 @@ const ContentSecurityPolicy = [
     ...GADS_IMAGES,
     ...CF_SCRIPTS,
     ...PAYSTACK_IMAGES,
+    ...YT_IMAGES,
   ].join(" "),
 
   // Styles / fonts
@@ -125,7 +152,11 @@ const ContentSecurityPolicy = [
     ...GADS_CONNECT,
     ...CF_CONNECT,
     ...PAYSTACK_CONNECT,
+    ...YT_CONNECT,
   ].join(" "),
+
+  // Media (YouTube can request media segments directly)
+  ["media-src 'self'", ...YT_FRAMES].join(" "),
 ].join("; ");
 
 const nextConfig: NextConfig = {
